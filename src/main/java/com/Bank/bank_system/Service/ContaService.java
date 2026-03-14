@@ -48,6 +48,32 @@ public class ContaService {
         conta.setSaldo(conta.getSaldo().add(valor));
     }
 
+    @Transactional
+    public void transferir(Long contaOrigemId, Long contaDestinoId, BigDecimal valor) {
+
+        Conta origem = contaRepository.findById(contaOrigemId)
+                .orElseThrow(() -> new RuntimeException("Conta origem não encontrada"));
+
+        Conta destino = contaRepository.findById(contaDestinoId)
+                .orElseThrow(() -> new RuntimeException("Conta destino não encontrada"));
+
+        if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Valor inválido");
+        }
+
+        if (origem.getSaldo().compareTo(valor) < 0) {
+            throw new RuntimeException("Saldo insuficiente");
+        }
+
+        // debita da origem
+        origem.setSaldo(origem.getSaldo().subtract(valor));
+
+        // adiciona na destino
+        destino.setSaldo(destino.getSaldo().add(valor));
+
+        contaRepository.save(origem);
+        contaRepository.save(destino);
+    }
 }
 
 
