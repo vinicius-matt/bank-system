@@ -1,7 +1,10 @@
 package com.Bank.bank_system.Service;
 
 import com.Bank.bank_system.Entity.Conta;
+import com.Bank.bank_system.Entity.Transacao;
 import com.Bank.bank_system.Repository.ContaRepository;
+import com.Bank.bank_system.Repository.TransacaoRepository;
+import com.Bank.bank_system.model.TransactionType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,9 +14,22 @@ import java.math.BigDecimal;
 public class ContaService {
 
     private final ContaRepository contaRepository;
+    private final TransacaoRepository transacaoRepository;
 
-    public ContaService(ContaRepository contaRepository) {
+    public ContaService(ContaRepository contaRepository, TransacaoRepository transacaoRepository) {
         this.contaRepository = contaRepository;
+        this.transacaoRepository = transacaoRepository;
+    }
+
+    private void registrarTransacao(Conta conta, TransactionType tipo, BigDecimal valor, String descricao) {
+
+        Transacao transacao = new Transacao();
+        transacao.setConta(conta);
+        transacao.setTipo(tipo);
+        transacao.setValor(valor);
+        transacao.setDescricao(descricao);
+
+        transacaoRepository.save(transacao);
     }
 
     @Transactional
@@ -32,7 +48,10 @@ public class ContaService {
 
         conta.setSaldo(conta.getSaldo().subtract(valor));
 
+        registrarTransacao(conta, TransactionType.SAQUE, valor, "Saque realizado");
+
         return contaRepository.save(conta);
+
     }
 
     @Transactional
@@ -46,6 +65,8 @@ public class ContaService {
         }
 
         conta.setSaldo(conta.getSaldo().add(valor));
+
+        registrarTransacao(conta, TransactionType.DEPOSITO, valor, "Depósito realizado");
     }
 
     @Transactional
@@ -67,9 +88,11 @@ public class ContaService {
 
         // debita da origem
         origem.setSaldo(origem.getSaldo().subtract(valor));
+        registrarTransacao(origem, TransactionType.SAQUE, valor, "Transferência enviada");
 
         // adiciona na destino
         destino.setSaldo(destino.getSaldo().add(valor));
+        registrarTransacao(destino, TransactionType.DEPOSITO, valor, "Transferência recebida");
 
         contaRepository.save(origem);
         contaRepository.save(destino);
