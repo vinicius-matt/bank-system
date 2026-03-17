@@ -25,7 +25,8 @@ public class Conta {
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
-    private BigDecimal saldo;
+
+    private BigDecimal saldo =  BigDecimal.ZERO;
 
     private double limite;
 
