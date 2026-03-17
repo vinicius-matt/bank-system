@@ -1,5 +1,7 @@
 package com.Bank.bank_system.Entity;
 
+import com.Bank.bank_system.model.StatusConta;
+import com.Bank.bank_system.model.TipoConta;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,8 +26,12 @@ public class Conta {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
     private BigDecimal saldo;
-    private double limite;
-    private String tipo;
-    private String status;
 
+    private double limite;
+
+    @Enumerated(EnumType.STRING)
+    private TipoConta tipo;
+
+    @Enumerated(EnumType.STRING)
+    private StatusConta status;
 }

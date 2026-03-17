@@ -28,8 +28,6 @@ public class Transacao {
     @Enumerated(EnumType.STRING)
     private TransactionType tipo;
 
-    private LocalDate data;
-
     @CreationTimestamp
     private LocalDateTime criadoEm;
 
