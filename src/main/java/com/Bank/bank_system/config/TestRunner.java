@@ -2,6 +2,7 @@ package com.Bank.bank_system.config;
 
 import com.Bank.bank_system.Entity.Cliente;
 import com.Bank.bank_system.Entity.Conta;
+import com.Bank.bank_system.Entity.Transacao;
 import com.Bank.bank_system.Repository.ClienteRepository;
 import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Service.ContaService;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Configuration
 public class TestRunner {
@@ -75,6 +77,18 @@ public class TestRunner {
 
             System.out.println("Saldo Conta 1: " + c1.getSaldo());
             System.out.println("Saldo Conta 2: " + c2.getSaldo());
+
+            System.out.println("=== EXTRATO CONTA 1 ===");
+
+            List<Transacao> extrato = contaService.extrato(conta1.getId());
+
+            for (Transacao t : extrato) {
+                System.out.println(
+                        t.getTipo() + " | " +
+                                t.getValor() + " | " +
+                                t.getDescricao()
+                );
+            }
         };
     }
 }

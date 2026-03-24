@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class ContaService {
@@ -96,6 +97,14 @@ public class ContaService {
 
         contaRepository.save(origem);
         contaRepository.save(destino);
+    }
+
+    public List<Transacao> extrato(Long contaId) {
+        //Verificando a existencia
+        contaRepository.findById(contaId)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+
+        return transacaoRepository.findByContaId(contaId);
     }
 }
 
