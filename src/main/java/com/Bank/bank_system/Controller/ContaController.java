@@ -1,30 +1,52 @@
 package com.Bank.bank_system.Controller;
 
+import com.Bank.bank_system.Entity.Cliente;
+import com.Bank.bank_system.Entity.Conta;
 import com.Bank.bank_system.Entity.Transacao;
+import com.Bank.bank_system.Repository.ClienteRepository;
+import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Service.ContaService;
+import com.Bank.bank_system.dto.ContaDTO;
 import com.Bank.bank_system.dto.TransferenciaDTO;
+import com.Bank.bank_system.model.StatusConta;
+import com.Bank.bank_system.model.TipoConta;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/contas")
+@RequestMapping("/conta")
 public class ContaController {
 
     private final ContaService contaService;
+    private final ClienteRepository clienteRepository;
+    private final ContaRepository contaRepository;
 
-    public ContaController(ContaService contaService) {
+    public ContaController(ContaService contaService, ClienteRepository clienteRepository, ContaRepository contaRepository) {
         this.contaService = contaService;
+        this.clienteRepository = clienteRepository;
+        this.contaRepository = contaRepository;
     }
+    @PostMapping("/criar")
+    public Conta criarConta(@RequestBody ContaDTO contaDTO) {
 
-    @GetMapping("/{id}/extrato")
-    public List<Transacao> extrato(@PathVariable Long id) {
-        return contaService.extrato(id);
+        Cliente cliente = clienteRepository.findById(contaDTO.getClienteId())
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado ou não existe"));
+
+        Conta conta = new Conta();
+        conta.setNumero(contaDTO.getNumero());
+        conta.setCliente(cliente);
+        conta.setSaldo(BigDecimal.ZERO);
+        conta.setTipo(contaDTO.getTipoConta());
+        conta.setStatus(StatusConta.ATIVA);
+
+        return contaRepository.save(conta);
+
     }
 
     @PostMapping("/{id}/depositar")
-        public void depositar(@PathVariable Long id, BigDecimal valor){
+    public void depositar(@PathVariable Long id, BigDecimal valor){
         contaService.depositar(id, valor);
     }
 
@@ -37,6 +59,12 @@ public class ContaController {
     public void transferir(@RequestBody TransferenciaDTO dto){
         contaService.transferir(dto.getOrigemId(), dto.getDestinoId(), dto.getValor());
     }
+
+    @GetMapping("/{id}/extrato")
+    public List<Transacao> extrato(@PathVariable Long id) {
+        return contaService.extrato(id);
+    }
+
 }
 
 
