@@ -9,7 +9,6 @@ import com.Bank.bank_system.Service.ContaService;
 import com.Bank.bank_system.dto.ContaDTO;
 import com.Bank.bank_system.dto.TransferenciaDTO;
 import com.Bank.bank_system.model.StatusConta;
-import com.Bank.bank_system.model.TipoConta;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
