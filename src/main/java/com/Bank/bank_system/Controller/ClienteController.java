@@ -1,7 +1,6 @@
 package com.Bank.bank_system.Controller;
 
 import com.Bank.bank_system.Entity.Cliente;
-import com.Bank.bank_system.Repository.ClienteRepository;
 import com.Bank.bank_system.Service.ClienteService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
