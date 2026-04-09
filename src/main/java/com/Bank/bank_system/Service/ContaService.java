@@ -4,6 +4,7 @@ import com.Bank.bank_system.Entity.Conta;
 import com.Bank.bank_system.Entity.Transacao;
 import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Repository.TransacaoRepository;
+import com.Bank.bank_system.model.StatusConta;
 import com.Bank.bank_system.model.TransactionType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,8 @@ public class ContaService {
         Conta conta = contaRepository.findById(contaId)
                 .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
 
+        validarContaAtiva(conta);
+
         if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Valor inválido");
         }
@@ -61,6 +64,8 @@ public class ContaService {
         Conta conta = contaRepository.findById(contaId)
                 .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
 
+        validarContaAtiva(conta);
+
         if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Valor inválido");
         }
@@ -78,6 +83,9 @@ public class ContaService {
 
         Conta destino = contaRepository.findById(contaDestinoId)
                 .orElseThrow(() -> new RuntimeException("Conta destino não encontrada"));
+
+        validarContaAtiva(origem);
+        validarContaAtiva(destino);
 
         if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Valor inválido");
@@ -106,7 +114,11 @@ public class ContaService {
 
         return transacaoRepository.findByContaId(contaId);
     }
+
+    private void validarContaAtiva(Conta conta) {
+        if (conta.getStatus() != StatusConta.ATIVA) {
+            throw new RuntimeException("Conta não está ativa");
+        }
+    }
 }
-
-
 
