@@ -2,6 +2,9 @@ package com.Bank.bank_system.Service;
 
 import com.Bank.bank_system.Entity.Conta;
 import com.Bank.bank_system.Entity.Transacao;
+import com.Bank.bank_system.Exception.ContaBloqueadaException;
+import com.Bank.bank_system.Exception.ContaNaoEncontradaException;
+import com.Bank.bank_system.Exception.SaldoInsuficienteException;
 import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Repository.TransacaoRepository;
 import com.Bank.bank_system.model.StatusConta;
@@ -38,7 +41,7 @@ public class ContaService {
     public Conta sacar(Long contaId, BigDecimal valor) {
 
         Conta conta = contaRepository.findById(contaId)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+                .orElseThrow(() -> new ContaNaoEncontradaException("Conta não encontrada"));
 
         validarContaAtiva(conta);
 
@@ -52,7 +55,7 @@ public class ContaService {
 
         //Validando limite + saldo na transferencia
         if (saldoDisponivel.compareTo(valor) < 0) {
-            throw new RuntimeException("Saldo + Limite insuficientes ");
+            throw new SaldoInsuficienteException("Saldo + Limite insuficientes ");
         }
 
         conta.setSaldo(conta.getSaldo().subtract(valor));
@@ -67,7 +70,7 @@ public class ContaService {
     public void depositar(Long contaId, BigDecimal valor) {
 
         Conta conta = contaRepository.findById(contaId)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+                .orElseThrow(() -> new ContaNaoEncontradaException("Conta não encontrada"));
 
         validarContaAtiva(conta);
 
@@ -84,17 +87,17 @@ public class ContaService {
     public void transferir(Long contaOrigemId, Long contaDestinoId, BigDecimal valor) {
 
         Conta origem = contaRepository.findById(contaOrigemId)
-                .orElseThrow(() -> new RuntimeException("Conta origem não encontrada"));
+                .orElseThrow(() -> new ContaNaoEncontradaException("Conta origem não encontrada"));
 
         Conta destino = contaRepository.findById(contaDestinoId)
-                .orElseThrow(() -> new RuntimeException("Conta destino não encontrada"));
+                .orElseThrow(() -> new ContaNaoEncontradaException("Conta destino não encontrada"));
 
         validarContaAtiva(origem);
         validarContaAtiva(destino);
 
         // valida valor da transferência
         if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Valor inválido");
+            throw new SaldoInsuficienteException("Valor inválido");
         }
 
         // Saldo disponível = saldo + limite
@@ -103,7 +106,7 @@ public class ContaService {
 
         // Validando saldo + limite
         if (saldoDisponivel.compareTo(valor) < 0) {
-            throw new RuntimeException("Saldo + limite insuficientes");
+            throw new SaldoInsuficienteException("Saldo + limite insuficientes");
         }
 
         // Debita da conta origem
@@ -133,14 +136,14 @@ public class ContaService {
     public List<Transacao> extrato(Long contaId) {
         //vendo se existe
         contaRepository.findById(contaId)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+                .orElseThrow(() -> new ContaNaoEncontradaException("Conta não encontrada"));
 
         return transacaoRepository.findByContaId(contaId);
     }
 
     private void validarContaAtiva(Conta conta) {
         if (conta.getStatus() != StatusConta.ATIVA) {
-            throw new RuntimeException("Conta não está ativa");
+            throw new ContaBloqueadaException("Conta não está ativa");
         }
     }
 
@@ -148,10 +151,10 @@ public class ContaService {
     public Conta bloquearConta(Long contaId) {
 
         Conta conta = contaRepository.findById(contaId)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+                .orElseThrow(() -> new ContaNaoEncontradaException("Conta não encontrada"));
 
         if (conta.getStatus() == StatusConta.BLOQUEADA) {
-            throw new RuntimeException("Conta já está bloqueada");
+            throw new ContaBloqueadaException("Conta já está bloqueada");
         }
 
         conta.setStatus(StatusConta.BLOQUEADA);
@@ -163,15 +166,27 @@ public class ContaService {
     public Conta ativarConta(Long contaId) {
 
         Conta conta = contaRepository.findById(contaId)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+                .orElseThrow(() -> new ContaNaoEncontradaException("Conta não encontrada"));
 
         if (conta.getStatus() == StatusConta.BLOQUEADA) {
-            throw new RuntimeException("Conta já está ativa");
+            throw new ContaBloqueadaException("Conta já está ativa");
         }
 
         conta.setStatus(StatusConta.BLOQUEADA);
 
         return contaRepository.save(conta);
+    }
+
+    @Transactional
+    public List<Conta> listarContas() {
+        return contaRepository.findAll();
+    }
+
+    @Transactional
+    public Conta buscarConta(Long id) {
+        return contaRepository.findById(id)
+                .orElseThrow(() ->
+                        new ContaNaoEncontradaException("Conta não encontrada"));
     }
 
 }

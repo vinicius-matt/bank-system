@@ -76,6 +76,16 @@ public class ContaController {
         return contaService.extrato(id);
     }
 
+    @GetMapping("/listar")
+    public List<Conta> listar(){
+        return contaRepository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Conta listar(@PathVariable Long id){
+        return contaService.buscarConta(id);
+    }
+
 }
 
 
