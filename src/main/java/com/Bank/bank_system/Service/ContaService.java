@@ -143,5 +143,36 @@ public class ContaService {
             throw new RuntimeException("Conta não está ativa");
         }
     }
+
+    @Transactional
+    public Conta bloquearConta(Long contaId) {
+
+        Conta conta = contaRepository.findById(contaId)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+
+        if (conta.getStatus() == StatusConta.BLOQUEADA) {
+            throw new RuntimeException("Conta já está bloqueada");
+        }
+
+        conta.setStatus(StatusConta.BLOQUEADA);
+
+        return contaRepository.save(conta);
+    }
+
+    @Transactional
+    public Conta ativarConta(Long contaId) {
+
+        Conta conta = contaRepository.findById(contaId)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+
+        if (conta.getStatus() == StatusConta.BLOQUEADA) {
+            throw new RuntimeException("Conta já está ativa");
+        }
+
+        conta.setStatus(StatusConta.BLOQUEADA);
+
+        return contaRepository.save(conta);
+    }
+
 }
 
