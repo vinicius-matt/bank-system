@@ -2,10 +2,9 @@ package com.Bank.bank_system.Controller;
 
 import com.Bank.bank_system.Entity.Cliente;
 import com.Bank.bank_system.Service.ClienteService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/cliente")
@@ -21,4 +20,15 @@ public class ClienteController {
     public Cliente criarCliente(@RequestBody Cliente cliente){
         return clienteService.criarCliente(cliente);
     }
+
+    @GetMapping("/listar")
+    public List<Cliente> listarClientes(){
+        return clienteService.listarClientes();
+    }
+
+    @GetMapping("/{id}")
+    public Cliente buscarCliente(@PathVariable Long id){
+        return clienteService.buscarCliente(id);
+    }
+
 }

@@ -4,6 +4,8 @@ import com.Bank.bank_system.Entity.Cliente;
 import com.Bank.bank_system.Repository.ClienteRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ClienteService {
 
@@ -23,5 +25,13 @@ public class ClienteService {
             throw new RuntimeException("Email ja cadastrado");
         }
         return clienteRepository.save(cliente);
+    }
+
+    public List<Cliente> listarClientes() {
+        return clienteRepository.findAll();
+    }
+
+    public Cliente buscarCliente(Long id){
+        return clienteRepository.findById(id).orElseThrow(() -> new RuntimeException("Cliente nao encontrado"));
     }
 }
