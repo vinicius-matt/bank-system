@@ -42,6 +42,13 @@ public class ContaService {
 
         validarContaAtiva(conta);
 
+        BigDecimal saldoDisponivel = conta.getSaldo()
+                .add(conta.getLimite());
+
+        if (saldoDisponivel.compareTo(valor) < 0) {
+            throw new RuntimeException("Saldo insuficiente");
+        }
+
         if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Valor inválido");
         }
@@ -95,11 +102,11 @@ public class ContaService {
             throw new RuntimeException("Saldo insuficiente");
         }
 
-        // debita da origem
+        // tira da origem
         origem.setSaldo(origem.getSaldo().subtract(valor));
         registrarTransacao(origem, TransactionType.SAQUE, valor, "Transferência enviada");
 
-        // adiciona na destino
+        // deposita no destino
         destino.setSaldo(destino.getSaldo().add(valor));
         registrarTransacao(destino, TransactionType.DEPOSITO, valor, "Transferência recebida");
 
@@ -108,7 +115,7 @@ public class ContaService {
     }
 
     public List<Transacao> extrato(Long contaId) {
-        //Verificando a existencia
+        //vendo se existe
         contaRepository.findById(contaId)
                 .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
 
