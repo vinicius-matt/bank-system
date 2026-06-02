@@ -45,16 +45,14 @@ public class ContaService {
         BigDecimal saldoDisponivel = conta.getSaldo()
                 .add(conta.getLimite());
 
-        if (saldoDisponivel.compareTo(valor) < 0) {
-            throw new RuntimeException("Saldo insuficiente");
-        }
-
+        //Validando se é um valor valido para transferencia
         if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Valor inválido");
         }
 
-        if (conta.getSaldo().compareTo(valor) < 0) {
-            throw new RuntimeException("Saldo insuficiente");
+        //Validando limite + saldo na transferencia
+        if (saldoDisponivel.compareTo(valor) < 0) {
+            throw new RuntimeException("Saldo + Limite insuficientes ");
         }
 
         conta.setSaldo(conta.getSaldo().subtract(valor));
