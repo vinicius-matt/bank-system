@@ -28,7 +28,7 @@ public class Conta {
 
     private BigDecimal saldo =  BigDecimal.ZERO;
 
-    private double limite;
+    private BigDecimal limite;
 
     @Enumerated(EnumType.STRING)
     private TipoConta tipo;
