@@ -43,4 +43,14 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("Erro interno do servidor"));
     }
+
+    @ExceptionHandler(ContaJaAtivaException.class)
+    public ResponseEntity<ErrorResponse> handleContaJaAtiva(
+            ContaJaAtivaException ex) {
+
+                return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
 }
