@@ -92,21 +92,39 @@ public class ContaService {
         validarContaAtiva(origem);
         validarContaAtiva(destino);
 
+        // valida valor da transferência
         if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Valor inválido");
         }
 
-        if (origem.getSaldo().compareTo(valor) < 0) {
-            throw new RuntimeException("Saldo insuficiente");
+        // Saldo disponível = saldo + limite
+        BigDecimal saldoDisponivel = origem.getSaldo()
+                .add(origem.getLimite());
+
+        // Validando saldo + limite
+        if (saldoDisponivel.compareTo(valor) < 0) {
+            throw new RuntimeException("Saldo + limite insuficientes");
         }
 
-        // tira da origem
+        // Debita da conta origem
         origem.setSaldo(origem.getSaldo().subtract(valor));
-        registrarTransacao(origem, TransactionType.SAQUE, valor, "Transferência enviada");
 
-        // deposita no destino
+        registrarTransacao(
+                origem,
+                TransactionType.SAQUE,
+                valor,
+                "Transferência enviada"
+        );
+
+        // Deposita na conta destino
         destino.setSaldo(destino.getSaldo().add(valor));
-        registrarTransacao(destino, TransactionType.DEPOSITO, valor, "Transferência recebida");
+
+        registrarTransacao(
+                destino,
+                TransactionType.DEPOSITO,
+                valor,
+                "Transferência recebida"
+        );
 
         contaRepository.save(origem);
         contaRepository.save(destino);
