@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @RestController
 @RequestMapping("/conta")
 public class ContaController {
@@ -57,6 +59,16 @@ public class ContaController {
     @PostMapping("/transferir")
     public void transferir(@RequestBody TransferenciaDTO dto){
         contaService.transferir(dto.getOrigemId(), dto.getDestinoId(), dto.getValor());
+    }
+
+    @PutMapping("/{id}/Bloquear")
+        public Conta bloquear(@PathVariable Long id){
+        return contaService.bloquearConta(id);
+    }
+
+    @PutMapping("/{id}/Ativar")
+    public Conta ativar(@PathVariable Long id){
+        return contaService.ativarConta(id);
     }
 
     @GetMapping("/{id}/extrato")
