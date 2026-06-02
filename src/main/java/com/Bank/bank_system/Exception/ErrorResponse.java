@@ -1,5 +1,12 @@
 package com.Bank.bank_system.Exception;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
 public class ErrorResponse {
 
     private String mensagem;
