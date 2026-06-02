@@ -71,20 +71,21 @@ public class ContaController {
         return contaService.ativarConta(id);
     }
 
-    @GetMapping("/{id}/extrato")
-    public List<Transacao> extrato(@PathVariable Long id) {
-        return contaService.extrato(id);
-    }
-
     @GetMapping("/listar")
-    public List<Conta> listar(){
-        return contaRepository.findAll();
+    public List<Conta> listarContas(){
+        return contaService.listarContas();
     }
 
     @GetMapping("/{id}")
     public Conta listar(@PathVariable Long id){
         return contaService.buscarConta(id);
     }
+
+    @GetMapping("/{id}/extrato")
+    public List<Transacao> extrato(@PathVariable Long id) {
+        return contaService.extrato(id);
+    }
+
 
 }
 
