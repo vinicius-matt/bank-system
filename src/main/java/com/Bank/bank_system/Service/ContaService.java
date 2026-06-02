@@ -3,6 +3,7 @@ package com.Bank.bank_system.Service;
 import com.Bank.bank_system.Entity.Conta;
 import com.Bank.bank_system.Entity.Transacao;
 import com.Bank.bank_system.Exception.ContaBloqueadaException;
+import com.Bank.bank_system.Exception.ContaJaAtivaException;
 import com.Bank.bank_system.Exception.ContaNaoEncontradaException;
 import com.Bank.bank_system.Exception.SaldoInsuficienteException;
 import com.Bank.bank_system.Repository.ContaRepository;
@@ -168,11 +169,11 @@ public class ContaService {
         Conta conta = contaRepository.findById(contaId)
                 .orElseThrow(() -> new ContaNaoEncontradaException("Conta não encontrada"));
 
-        if (conta.getStatus() == StatusConta.BLOQUEADA) {
-            throw new ContaBloqueadaException("Conta já está ativa");
+        if (conta.getStatus() == StatusConta.ATIVA) {
+            throw new ContaJaAtivaException("Conta já está ativa");
         }
 
-        conta.setStatus(StatusConta.BLOQUEADA);
+        conta.setStatus(StatusConta.ATIVA);
 
         return contaRepository.save(conta);
     }
