@@ -13,7 +13,9 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Bank Bank System API")
-                        .description("API de Sistema Bancário")
+                        .description("API bancária utilizando Java, Spring Boot e PostgreSQL" +
+                                " com gerenciamento de clientes, contas, extrato, depósitos, saques, transferências e suporte a limite de crédito " +
+                                "(cheque especial)")
                         .version("1.0"));
     }
 }
