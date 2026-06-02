@@ -1,5 +1,6 @@
 package com.Bank.bank_system.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,6 +29,7 @@ public class Cliente {
     @Column(unique = true)
     private String email;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "cliente")
     private List<Conta> contas;
 
