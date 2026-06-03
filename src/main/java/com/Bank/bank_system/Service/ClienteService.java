@@ -1,6 +1,8 @@
 package com.Bank.bank_system.Service;
 
 import com.Bank.bank_system.Entity.Cliente;
+import com.Bank.bank_system.Exception.ClienteCadastradoException;
+import com.Bank.bank_system.Exception.ClienteNaoEncontradoException;
 import com.Bank.bank_system.Repository.ClienteRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +20,11 @@ public class ClienteService {
     public Cliente criarCliente(Cliente cliente) {
 
         if (clienteRepository.existsByCpf(cliente.getCpf())) {
-            throw new RuntimeException("CPF já cadastrado");
+            throw new ClienteCadastradoException("CPF já cadastrado");
         }
 
         if (clienteRepository.existsByEmail(cliente.getEmail())) {
-            throw new RuntimeException("Email ja cadastrado");
+            throw new ClienteCadastradoException("Email ja cadastrado");
         }
         return clienteRepository.save(cliente);
     }
@@ -32,6 +34,6 @@ public class ClienteService {
     }
 
     public Cliente buscarCliente(Long id){
-        return clienteRepository.findById(id).orElseThrow(() -> new RuntimeException("Cliente nao encontrado"));
+        return clienteRepository.findById(id).orElseThrow(() -> new ClienteNaoEncontradoException("Cliente nao encontrado"));
     }
 }

@@ -48,8 +48,23 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleContaJaAtiva(
             ContaJaAtivaException ex) {
 
-                return ResponseEntity
+        return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ClienteNaoEncontradoException.class)
+    public ResponseEntity<ErrorResponse> handleClienteNaoEncontrado(
+            ClienteNaoEncontradoException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ClienteCadastradoException.class)
+    public ResponseEntity<ErrorResponse> handleClienteCadastrado(ClienteCadastradoException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
