@@ -29,6 +29,9 @@ public class Cliente {
     @Column(unique = true)
     private String email;
 
+    @Column(unique = true)
+    private String celular;
+
     @JsonIgnore
     @OneToMany(mappedBy = "cliente")
     private List<Conta> contas;
