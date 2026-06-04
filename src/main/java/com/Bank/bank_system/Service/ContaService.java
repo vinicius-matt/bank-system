@@ -2,13 +2,11 @@ package com.Bank.bank_system.Service;
 
 import com.Bank.bank_system.Entity.Conta;
 import com.Bank.bank_system.Entity.Transacao;
-import com.Bank.bank_system.Exception.ContaBloqueadaException;
-import com.Bank.bank_system.Exception.ContaJaAtivaException;
-import com.Bank.bank_system.Exception.ContaNaoEncontradaException;
-import com.Bank.bank_system.Exception.SaldoInsuficienteException;
+import com.Bank.bank_system.Exception.*;
 import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Repository.TransacaoRepository;
 import com.Bank.bank_system.model.StatusConta;
+import com.Bank.bank_system.dto.ContaDTO;
 import com.Bank.bank_system.model.TransactionType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +24,17 @@ public class ContaService {
     public ContaService(ContaRepository contaRepository, TransacaoRepository transacaoRepository) {
         this.contaRepository = contaRepository;
         this.transacaoRepository = transacaoRepository;
+    }
+
+    public Conta criarConta(ContaDTO contaDTO) {
+
+        Conta conta = new Conta();
+        conta.setLimite(BigDecimal.ZERO);
+        conta.setTipo(contaDTO.getTipoConta());
+        conta.setSaldo(BigDecimal.ZERO);
+        conta.setStatus(StatusConta.ATIVA);
+
+        return contaRepository.save(conta);
     }
 
     private void registrarTransacao(Conta conta, TransactionType tipo, BigDecimal valor, String descricao) {
@@ -207,11 +216,11 @@ public class ContaService {
         Conta conta = buscarConta(id);
 
         if (conta.getSaldo().compareTo(BigDecimal.ZERO) > 0) {
-            throw new RuntimeException("A conta Possui saldo e não pode ser encerrada");
+            throw new EncerrarContaException("A conta Possui saldo e não pode ser encerrada");
         }
 
         if (conta.getStatus() == StatusConta.INATIVA) {
-            throw new ContaNaoEncontradaException("Esta conta ja foi encerrada ");
+            throw new EncerrarContaException("Esta conta ja foi encerrada");
         }
 
         conta.setStatus(StatusConta.INATIVA);

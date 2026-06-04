@@ -30,21 +30,10 @@ public class ContaController {
         this.clienteRepository = clienteRepository;
         this.contaRepository = contaRepository;
     }
+
     @PostMapping("/criar")
     public Conta criarConta(@RequestBody ContaDTO contaDTO) {
-
-        Cliente cliente = clienteRepository.findById(contaDTO.getClienteId())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado ou não existe"));
-
-        Conta conta = new Conta();
-        conta.setNumero(contaDTO.getNumero());
-        conta.setCliente(cliente);
-        conta.setSaldo(BigDecimal.ZERO);
-        conta.setTipo(contaDTO.getTipoConta());
-        conta.setStatus(StatusConta.ATIVA);
-
-        return contaRepository.save(conta);
-
+        return  contaService.criarConta(contaDTO);
     }
 
     @PostMapping("/{id}/depositar")
