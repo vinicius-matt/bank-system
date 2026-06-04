@@ -86,6 +86,12 @@ public class ContaController {
         contaService.encerrarConta(id);
     }
 
+    @PutMapping("/{id}/alterarLimite")
+        public Conta alterarLimite(@PathVariable Long id, BigDecimal valor){
+       return contaService.alterarLimite(id, valor);
+    }
+
+
 }
 
 

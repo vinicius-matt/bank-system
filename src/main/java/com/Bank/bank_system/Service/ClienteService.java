@@ -39,6 +39,7 @@ public class ClienteService {
     }
 
     public List<Cliente> listarClientes() {
+
         return clienteRepository.findAll();
     }
 
