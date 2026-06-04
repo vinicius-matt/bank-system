@@ -4,6 +4,7 @@ import com.Bank.bank_system.Entity.Cliente;
 import com.Bank.bank_system.Exception.ClienteCadastradoException;
 import com.Bank.bank_system.Exception.ClienteNaoEncontradoException;
 import com.Bank.bank_system.Repository.ClienteRepository;
+import com.Bank.bank_system.dto.ClienteDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,15 +18,22 @@ public class ClienteService {
         this.clienteRepository = clienteRepository;
     }
 
-    public Cliente criarCliente(Cliente cliente) {
+    public Cliente criarCliente(ClienteDTO clienteRequest) {
 
-        if (clienteRepository.existsByCpf(cliente.getCpf())) {
+        if (clienteRepository.existsByCpf(clienteRequest.getCpf())) {
             throw new ClienteCadastradoException("CPF já cadastrado");
         }
 
-        if (clienteRepository.existsByEmail(cliente.getEmail())) {
-            throw new ClienteCadastradoException("Email ja cadastrado");
+        if (clienteRepository.existsByEmail(clienteRequest.getEmail())) {
+            throw new ClienteCadastradoException("Email já cadastrado");
         }
+
+        Cliente cliente = new Cliente();
+
+        cliente.setNome(clienteRequest.getNome());
+        cliente.setCpf(clienteRequest.getCpf());
+        cliente.setEmail(clienteRequest.getEmail());
+
         return clienteRepository.save(cliente);
     }
 

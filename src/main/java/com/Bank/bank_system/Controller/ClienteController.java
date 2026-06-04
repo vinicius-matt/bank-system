@@ -2,6 +2,7 @@ package com.Bank.bank_system.Controller;
 
 import com.Bank.bank_system.Entity.Cliente;
 import com.Bank.bank_system.Service.ClienteService;
+import com.Bank.bank_system.dto.ClienteDTO;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +18,8 @@ public class ClienteController {
     }
 
     @PostMapping("/criar")
-    public Cliente criarCliente(@RequestBody Cliente cliente){
-        return clienteService.criarCliente(cliente);
+    public Cliente criarCliente(@RequestBody ClienteDTO clienteRequest){
+        return clienteService.criarCliente(clienteRequest);
     }
 
     @GetMapping("/listar")
