@@ -7,6 +7,7 @@ import com.Bank.bank_system.Exception.*;
 import com.Bank.bank_system.Repository.ClienteRepository;
 import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Repository.TransacaoRepository;
+import com.Bank.bank_system.dto.ContaResponseDTO;
 import com.Bank.bank_system.model.StatusConta;
 import com.Bank.bank_system.dto.ContaDTO;
 import com.Bank.bank_system.model.TransactionType;
@@ -29,6 +30,12 @@ public class ContaService {
         this.contaRepository = contaRepository;
         this.transacaoRepository = transacaoRepository;
         this.clienteRepository = clienteRepository;
+    }
+
+    private Conta buscarContaEntity(Long id) {
+        return contaRepository.findById(id)
+                .orElseThrow(() ->
+                        new ContaNaoEncontradaException("Conta não encontrada"));
     }
 
     public Conta criarConta(ContaDTO contaDTO) {
@@ -215,16 +222,25 @@ public class ContaService {
         return contaRepository.findAll();
     }
 
-    @Transactional
-    public Conta buscarConta(Long id) {
-        return contaRepository.findById(id)
-                .orElseThrow(() ->
-                        new ContaNaoEncontradaException("Conta não encontrada"));
+    @Transactional(readOnly = true)
+    public ContaResponseDTO buscarConta(Long id) {
+
+        Conta conta = buscarContaEntity(id);
+
+        return new ContaResponseDTO(
+                conta.getId(),
+                conta.getNumero(),
+                conta.getSaldo(),
+                conta.getLimite(),
+                conta.getTipo(),
+                conta.getStatus(),
+                conta.getCliente().getId()
+        );
     }
 
     @Transactional
     public Map<String, BigDecimal> consultarSaldo(Long id) {
-        Conta conta = buscarConta(id);
+        Conta conta = buscarContaEntity(id);
 
         if (conta.getStatus() == StatusConta.BLOQUEADA || conta.getStatus() == StatusConta.INATIVA) {
             throw new ContaBloqueadaException("Conta esta bloqueada ou Inativa");
@@ -235,7 +251,7 @@ public class ContaService {
 
     @Transactional
     public Conta encerrarConta(Long id) {
-        Conta conta = buscarConta(id);
+        Conta conta = buscarContaEntity(id);
 
         if (conta.getSaldo().compareTo(BigDecimal.ZERO) > 0) {
             throw new EncerrarContaException("Não é possível encerrar uma conta com saldo disponível");
@@ -251,13 +267,13 @@ public class ContaService {
     }
 
     public Conta alterarLimite(Long id, BigDecimal valor) {
-        Conta conta = buscarConta(id);
+        Conta conta = buscarContaEntity(id);
 
         if (conta.getStatus() == StatusConta.BLOQUEADA ||  conta.getStatus() == StatusConta.INATIVA) {
             throw new ContaNaoEncontradaException("Não é possivel alterar o limite de uma conta Inativa ou Bloqueada");
         }
 
-        if (conta.getLimite().compareTo(valor) <= 0) {
+        if (conta.getLimite().compareTo(valor) <=  0) {
             throw new SaldoInsuficienteException("O limite deve ser maior que zero");
         }
 
@@ -267,4 +283,3 @@ public class ContaService {
     }
 
 }
-

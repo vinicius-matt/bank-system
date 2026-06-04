@@ -1,21 +1,18 @@
 package com.Bank.bank_system.Controller;
 
-import com.Bank.bank_system.Entity.Cliente;
 import com.Bank.bank_system.Entity.Conta;
 import com.Bank.bank_system.Entity.Transacao;
 import com.Bank.bank_system.Repository.ClienteRepository;
 import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Service.ContaService;
 import com.Bank.bank_system.dto.ContaDTO;
+import com.Bank.bank_system.dto.ContaResponseDTO;
 import com.Bank.bank_system.dto.TransferenciaDTO;
-import com.Bank.bank_system.model.StatusConta;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
 @RequestMapping("/conta")
@@ -67,7 +64,7 @@ public class ContaController {
     }
 
     @GetMapping("/{id}")
-    public Conta listar(@PathVariable Long id){
+    public ContaResponseDTO listar(@PathVariable Long id){
         return contaService.buscarConta(id);
     }
 
@@ -90,7 +87,6 @@ public class ContaController {
         public Conta alterarLimite(@PathVariable Long id, BigDecimal valor){
        return contaService.alterarLimite(id, valor);
     }
-
 
 }
 
