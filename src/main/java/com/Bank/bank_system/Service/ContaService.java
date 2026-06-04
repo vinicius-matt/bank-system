@@ -190,5 +190,16 @@ public class ContaService {
                         new ContaNaoEncontradaException("Conta não encontrada"));
     }
 
+    @Transactional
+    public BigDecimal consultarSaldo(Long contaId) {
+        Conta conta = buscarConta(contaId);
+
+        if (conta.getStatus() == StatusConta.BLOQUEADA || conta.getStatus() == StatusConta.INATIVA ) {
+            throw new ContaBloqueadaException("Conta esta bloqueada ou Inativa");
+        }
+
+        return conta.getSaldo();
+    }
+
 }
 

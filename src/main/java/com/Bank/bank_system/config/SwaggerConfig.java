@@ -12,7 +12,7 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Bank Bank System API")
+                        .title("Bank System API")
                         .description("API bancária utilizando Java, Spring Boot e PostgreSQL" +
                                 " com gerenciamento de clientes, contas, extrato, depósitos, saques, transferências e suporte a limite de crédito " +
                                 "(cheque especial)")
