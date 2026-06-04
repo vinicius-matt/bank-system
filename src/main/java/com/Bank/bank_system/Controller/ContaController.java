@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
@@ -86,6 +87,15 @@ public class ContaController {
         return contaService.extrato(id);
     }
 
+    @GetMapping("/{id}/saldo")
+    public Map<String, BigDecimal> consultarSaldo(@PathVariable Long id){
+        return contaService.consultarSaldo(id);
+    }
+
+    @PutMapping("/{id}/encerrar")
+    public void encerrar(@PathVariable Long id){
+        contaService.encerrarConta(id);
+    }
 
 }
 

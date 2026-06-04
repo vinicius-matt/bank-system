@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ContaService {
@@ -191,14 +192,31 @@ public class ContaService {
     }
 
     @Transactional
-    public BigDecimal consultarSaldo(Long contaId) {
-        Conta conta = buscarConta(contaId);
+    public Map<String, BigDecimal> consultarSaldo(Long id) {
+        Conta conta = buscarConta(id);
 
-        if (conta.getStatus() == StatusConta.BLOQUEADA || conta.getStatus() == StatusConta.INATIVA ) {
+        if (conta.getStatus() == StatusConta.BLOQUEADA || conta.getStatus() == StatusConta.INATIVA) {
             throw new ContaBloqueadaException("Conta esta bloqueada ou Inativa");
         }
 
-        return conta.getSaldo();
+        return Map.of("saldo", conta.getSaldo());
+    }
+
+    @Transactional
+    public Conta encerrarConta(Long id) {
+        Conta conta = buscarConta(id);
+
+        if (conta.getSaldo().compareTo(BigDecimal.ZERO) > 0) {
+            throw new RuntimeException("A conta Possui saldo e não pode ser encerrada");
+        }
+
+        if (conta.getStatus() == StatusConta.INATIVA) {
+            throw new ContaNaoEncontradaException("Esta conta ja foi encerrada ");
+        }
+
+        conta.setStatus(StatusConta.INATIVA);
+
+        return contaRepository.save(conta);
     }
 
 }
