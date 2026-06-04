@@ -1,8 +1,10 @@
 package com.Bank.bank_system.Service;
 
+import com.Bank.bank_system.Entity.Cliente;
 import com.Bank.bank_system.Entity.Conta;
 import com.Bank.bank_system.Entity.Transacao;
 import com.Bank.bank_system.Exception.*;
+import com.Bank.bank_system.Repository.ClienteRepository;
 import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Repository.TransacaoRepository;
 import com.Bank.bank_system.model.StatusConta;
@@ -14,27 +16,46 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @Service
 public class ContaService {
 
     private final ContaRepository contaRepository;
     private final TransacaoRepository transacaoRepository;
+    private final ClienteRepository clienteRepository;
 
-    public ContaService(ContaRepository contaRepository, TransacaoRepository transacaoRepository) {
+    public ContaService(ContaRepository contaRepository, TransacaoRepository transacaoRepository, ClienteRepository clienteRepository) {
         this.contaRepository = contaRepository;
         this.transacaoRepository = transacaoRepository;
+        this.clienteRepository = clienteRepository;
     }
 
     public Conta criarConta(ContaDTO contaDTO) {
 
+        Cliente cliente = clienteRepository.findById(contaDTO.getClienteId())
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
         Conta conta = new Conta();
+        conta.setCliente(cliente);
+        conta.setNumero(gerarConta());
         conta.setLimite(BigDecimal.ZERO);
         conta.setTipo(contaDTO.getTipoConta());
         conta.setSaldo(BigDecimal.ZERO);
         conta.setStatus(StatusConta.ATIVA);
 
         return contaRepository.save(conta);
+    }
+
+    private String gerarConta() {
+        Random random = new Random();
+        String numero;
+
+        do {
+            numero = String.format("%08d", random.nextInt(100_000_000));
+        } while (contaRepository.existsByNumero(numero));
+
+        return numero;
     }
 
     private void registrarTransacao(Conta conta, TransactionType tipo, BigDecimal valor, String descricao) {
@@ -154,9 +175,10 @@ public class ContaService {
 
     private void validarContaAtiva(Conta conta) {
         if (conta.getStatus() != StatusConta.ATIVA) {
-            throw new ContaBloqueadaException("Conta não está ativa");
+            throw new ContaBloqueadaException("A conta não está ativa para realizar operações");
         }
     }
+
 
     @Transactional
     public Conta bloquearConta(Long contaId) {
@@ -216,7 +238,7 @@ public class ContaService {
         Conta conta = buscarConta(id);
 
         if (conta.getSaldo().compareTo(BigDecimal.ZERO) > 0) {
-            throw new EncerrarContaException("A conta Possui saldo e não pode ser encerrada");
+            throw new EncerrarContaException("Não é possível encerrar uma conta com saldo disponível");
         }
 
         if (conta.getStatus() == StatusConta.INATIVA) {
@@ -226,6 +248,22 @@ public class ContaService {
         conta.setStatus(StatusConta.INATIVA);
 
         return contaRepository.save(conta);
+    }
+
+    public Conta alterarLimite(Long id, BigDecimal valor) {
+        Conta conta = buscarConta(id);
+
+        if (conta.getStatus() == StatusConta.BLOQUEADA ||  conta.getStatus() == StatusConta.INATIVA) {
+            throw new ContaNaoEncontradaException("Não é possivel alterar o limite de uma conta Inativa ou Bloqueada");
+        }
+
+        if (conta.getLimite().compareTo(valor) <= 0) {
+            throw new SaldoInsuficienteException("O limite deve ser maior que zero");
+        }
+
+        conta.setLimite(conta.getLimite().add(valor));
+
+        return  contaRepository.save(conta);
     }
 
 }
