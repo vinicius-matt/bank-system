@@ -64,7 +64,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ClienteCadastradoException.class)
     public ResponseEntity<ErrorResponse> handleClienteCadastrado(ClienteCadastradoException ex) {
         return ResponseEntity
-                .status(HttpStatus.FOUND)
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(EncerrarContaException.class)
+    public ResponseEntity<ErrorResponse> handleEncerrarConta(EncerrarContaException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
