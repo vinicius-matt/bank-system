@@ -48,18 +48,4 @@ public class ClienteService {
         return clienteRepository.findById(id).orElseThrow(() -> new ClienteNaoEncontradoException("Cliente nao encontrado"));
     }
 
-    public Cliente alterarCliente(Long id, ClienteDTO clienteRequest) {
-
-
-        Cliente clienteExistente = clienteRepository.findById(id).orElseThrow(
-                () -> new ClienteNaoEncontradoException("Cliente não encontrado")
-        );
-
-        clienteExistente.setNome(clienteRequest.getNome());
-        clienteExistente.setCpf(clienteRequest.getCpf());
-        clienteExistente.setEmail(clienteRequest.getEmail());
-        clienteExistente.setCelular(clienteRequest.getCelular());
-
-        return clienteRepository.save(clienteExistente);
-    }
 }
