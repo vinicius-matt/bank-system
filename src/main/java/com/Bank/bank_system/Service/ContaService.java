@@ -32,6 +32,19 @@ public class ContaService {
         this.clienteRepository = clienteRepository;
     }
 
+    //teste metodo auxiliar
+    private ContaResponseDTO toDTO(Conta conta) {
+        return new ContaResponseDTO(
+                conta.getId(),
+                conta.getNumero(),
+                conta.getSaldo(),
+                conta.getLimite(),
+                conta.getTipo(),
+                conta.getStatus(),
+                conta.getCliente().getId()
+        );
+    }
+
     private Conta buscarContaEntity(Long id) {
         return contaRepository.findById(id)
                 .orElseThrow(() ->
@@ -217,9 +230,13 @@ public class ContaService {
         return contaRepository.save(conta);
     }
 
-    @Transactional
-    public List<Conta> listarContas() {
-        return contaRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<ContaResponseDTO> listarContas() {
+
+        return contaRepository.findAll()
+                .stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     @Transactional(readOnly = true)

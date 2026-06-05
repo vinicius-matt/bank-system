@@ -59,7 +59,7 @@ public class ContaController {
     }
 
     @GetMapping("/listar")
-    public List<Conta> listarContas(){
+    public List<ContaResponseDTO> listarContas(){
         return contaService.listarContas();
     }
 
