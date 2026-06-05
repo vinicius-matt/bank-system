@@ -35,6 +35,8 @@ public class Transacao {
 
     private String descricao;
 
+    private LocalDateTime data;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conta_id")
     private Conta conta;

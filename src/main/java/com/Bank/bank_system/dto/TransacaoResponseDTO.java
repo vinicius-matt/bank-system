@@ -1,6 +1,7 @@
 package com.Bank.bank_system.dto;
 
 import com.Bank.bank_system.model.TransactionType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-
+@AllArgsConstructor
 public class TransacaoResponseDTO {
 
     private Long id;
