@@ -273,7 +273,7 @@ public class ContaService {
             throw new ContaNaoEncontradaException("Não é possivel alterar o limite de uma conta Inativa ou Bloqueada");
         }
 
-        if (conta.getLimite().compareTo(valor) <=  0) {
+        if (conta.getLimite().compareTo(valor) > 0) {
             throw new SaldoInsuficienteException("O limite deve ser maior que zero");
         }
 
