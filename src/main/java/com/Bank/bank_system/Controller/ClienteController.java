@@ -32,9 +32,6 @@ public class ClienteController {
         return clienteService.buscarCliente(id);
     }
 
-    @PutMapping("/{id}")
-    public Cliente atualizarCliente(@PathVariable Long id, @RequestBody ClienteDTO clienteRequest){
-        return clienteService.alterarCliente(id, clienteRequest);
-    }
+
 
 }
