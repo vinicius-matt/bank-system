@@ -8,6 +8,7 @@ import com.Bank.bank_system.Repository.ClienteRepository;
 import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Repository.TransacaoRepository;
 import com.Bank.bank_system.dto.ContaResponseDTO;
+import com.Bank.bank_system.dto.TransacaoResponseDTO;
 import com.Bank.bank_system.model.StatusConta;
 import com.Bank.bank_system.dto.ContaDTO;
 import com.Bank.bank_system.model.TransactionType;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -32,7 +34,18 @@ public class ContaService {
         this.clienteRepository = clienteRepository;
     }
 
-    //teste metodo auxiliar
+
+    private TransacaoResponseDTO toDTO(Transacao transacao) {
+
+        return new TransacaoResponseDTO(
+                transacao.getId(),
+                transacao.getTipo(),
+                transacao.getValor(),
+                transacao.getDescricao(),
+                transacao.getData()
+        );
+    }
+
     private ContaResponseDTO toDTO(Conta conta) {
         return new ContaResponseDTO(
                 conta.getId(),
@@ -85,6 +98,7 @@ public class ContaService {
         transacao.setTipo(tipo);
         transacao.setValor(valor);
         transacao.setDescricao(descricao);
+        transacao.setData(LocalDateTime.now());
 
         transacaoRepository.save(transacao);
     }
@@ -244,15 +258,7 @@ public class ContaService {
 
         Conta conta = buscarContaEntity(id);
 
-        return new ContaResponseDTO(
-                conta.getId(),
-                conta.getNumero(),
-                conta.getSaldo(),
-                conta.getLimite(),
-                conta.getTipo(),
-                conta.getStatus(),
-                conta.getCliente().getId()
-        );
+        return toDTO(conta);
     }
 
     @Transactional
