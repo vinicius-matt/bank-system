@@ -270,11 +270,11 @@ public class ContaService {
         Conta conta = buscarContaEntity(id);
 
         if (conta.getStatus() == StatusConta.BLOQUEADA ||  conta.getStatus() == StatusConta.INATIVA) {
-            throw new ContaNaoEncontradaException("Não é possivel alterar o limite de uma conta Inativa ou Bloqueada");
+            throw new ContaBloqueadaException("Não é possivel alterar o limite de uma conta Inativa ou Bloqueada");
         }
 
-        if (conta.getLimite().compareTo(valor) > 0) {
-            throw new SaldoInsuficienteException("O limite deve ser maior que zero");
+        if (valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("O limite deve ser maior que zero");
         }
 
         conta.setLimite(conta.getLimite().add(valor));
