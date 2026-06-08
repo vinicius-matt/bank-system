@@ -175,6 +175,11 @@ public class ContaService {
                            Long contaDestinoId,
                            BigDecimal valor) {
 
+        if (contaOrigemId.equals(contaDestinoId)) {
+            throw new IllegalArgumentException(
+                    "Não é possível transferir para a mesma conta");
+        }
+
         Conta origem = buscarContaEntity(contaOrigemId);
         Conta destino = buscarContaEntity(contaDestinoId);
 
@@ -204,6 +209,7 @@ public class ContaService {
         contaRepository.save(origem);
         contaRepository.save(destino);
     }
+
     @Transactional(readOnly = true)
     public List<TransacaoResponseDTO> extrato(Long contaId) {
 
