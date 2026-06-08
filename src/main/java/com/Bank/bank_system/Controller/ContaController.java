@@ -1,5 +1,6 @@
 package com.Bank.bank_system.Controller;
 
+import com.Bank.bank_system.Entity.Conta;
 import com.Bank.bank_system.Service.ContaService;
 import com.Bank.bank_system.dto.*;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +24,13 @@ public class ContaController {
     }
 
     @PostMapping("/{id}/depositar")
-    public void depositar(@PathVariable Long id, BigDecimal valor){
-        contaService.depositar(id, valor);
+    public ContaResponseDTO depositar(@PathVariable Long id, BigDecimal valor){
+        return contaService.depositar(id, valor);
     }
 
     @PostMapping("/{id}/sacar")
-    public void sacar(@PathVariable Long id, BigDecimal valor){
-        contaService.sacar(id, valor);
+    public ContaResponseDTO sacar(@PathVariable Long id, BigDecimal valor){
+       return contaService.sacar(id, valor);
     }
 
     @PostMapping("/transferir")
@@ -68,8 +69,8 @@ public class ContaController {
     }
 
     @PutMapping("/{id}/encerrar")
-    public void encerrarConta(@PathVariable Long id){
-        contaService.encerrarConta(id);
+    public ContaResponseDTO encerrarConta(@PathVariable Long id){
+       return contaService.encerrarConta(id);
     }
 
     @PutMapping("/{id}/alterarLimite")

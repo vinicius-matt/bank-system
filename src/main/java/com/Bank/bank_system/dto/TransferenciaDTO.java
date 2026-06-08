@@ -14,4 +14,5 @@ public class TransferenciaDTO {
     private Long  origemId;
     private Long  destinoId;
     private BigDecimal valor;
+    private String mensagem;
 }

@@ -39,6 +39,23 @@ public class ContaService {
         return toDTO(contaRepository.save(conta));
     }
 
+    private void validarValor(BigDecimal valor) {
+
+        if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Valor inválido");
+        }
+    }
+
+    private void validarSaldoDisponivel(Conta conta, BigDecimal valor) {
+
+        BigDecimal saldoDisponivel =
+                conta.getSaldo().add(conta.getLimite());
+
+        if (saldoDisponivel.compareTo(valor) < 0) {
+            throw new SaldoInsuficienteException(
+                    "Saldo + limite insuficientes");
+        }
+    }
 
     private TransacaoResponseDTO toDTO(Transacao transacao) {
 
@@ -118,17 +135,8 @@ public class ContaService {
         Conta conta = buscarContaEntity(contaId);
 
         validarContaAtiva(conta);
-
-        BigDecimal saldoDisponivel =
-                conta.getSaldo().add(conta.getLimite());
-
-        if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Valor inválido");
-        }
-
-        if (saldoDisponivel.compareTo(valor) < 0) {
-            throw new SaldoInsuficienteException("Saldo + limite insuficientes");
-        }
+        validarValor(valor);
+        validarSaldoDisponivel(conta, valor);
 
         conta.setSaldo(conta.getSaldo().subtract(valor));
 
@@ -166,33 +174,21 @@ public class ContaService {
     }
 
     @Transactional
-    public void transferir(Long contaOrigemId, Long contaDestinoId, BigDecimal valor) {
+    public void transferir(Long contaOrigemId,
+                           Long contaDestinoId,
+                           BigDecimal valor) {
 
-        Conta origem = contaRepository.findById(contaOrigemId)
-                .orElseThrow(() -> new ContaNaoEncontradaException("Conta origem não encontrada"));
-
-        Conta destino = contaRepository.findById(contaDestinoId)
-                .orElseThrow(() -> new ContaNaoEncontradaException("Conta destino não encontrada"));
+        Conta origem = buscarContaEntity(contaOrigemId);
+        Conta destino = buscarContaEntity(contaDestinoId);
 
         validarContaAtiva(origem);
         validarContaAtiva(destino);
 
-        // valida valor da transferência
-        if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new SaldoInsuficienteException("Valor inválido");
-        }
+        validarValor(valor);
+        validarSaldoDisponivel(origem, valor);
 
-        // Saldo disponível = saldo + limite
-        BigDecimal saldoDisponivel = origem.getSaldo()
-                .add(origem.getLimite());
-
-        // Validando saldo + limite
-        if (saldoDisponivel.compareTo(valor) < 0) {
-            throw new SaldoInsuficienteException("Saldo + limite insuficientes");
-        }
-
-        // Debita da conta origem
         origem.setSaldo(origem.getSaldo().subtract(valor));
+        destino.setSaldo(destino.getSaldo().add(valor));
 
         registrarTransacao(
                 origem,
@@ -200,9 +196,6 @@ public class ContaService {
                 valor,
                 "Transferência enviada"
         );
-
-        // Deposita na conta destino
-        destino.setSaldo(destino.getSaldo().add(valor));
 
         registrarTransacao(
                 destino,
@@ -214,7 +207,6 @@ public class ContaService {
         contaRepository.save(origem);
         contaRepository.save(destino);
     }
-
     @Transactional(readOnly = true)
     public List<TransacaoResponseDTO> extrato(Long contaId) {
 
