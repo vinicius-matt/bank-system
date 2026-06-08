@@ -34,6 +34,11 @@ public class ContaService {
         this.clienteRepository = clienteRepository;
     }
 
+    //auxiliar
+    private ContaResponseDTO salvarEConverter(Conta conta) {
+        return toDTO(contaRepository.save(conta));
+    }
+
 
     private TransacaoResponseDTO toDTO(Transacao transacao) {
 
@@ -138,20 +143,26 @@ public class ContaService {
     }
 
     @Transactional
-    public void depositar(Long contaId, BigDecimal valor) {
+    public ContaResponseDTO depositar(Long contaId, BigDecimal valor) {
 
-        Conta conta = contaRepository.findById(contaId)
-                .orElseThrow(() -> new ContaNaoEncontradaException("Conta não encontrada"));
+        Conta conta = buscarContaEntity(contaId);
 
         validarContaAtiva(conta);
 
         if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Valor inválido");
+            throw new IllegalArgumentException("Valor inválido");
         }
 
         conta.setSaldo(conta.getSaldo().add(valor));
 
-        registrarTransacao(conta, TransactionType.DEPOSITO, valor, "Depósito realizado");
+        registrarTransacao(
+                conta,
+                TransactionType.DEPOSITO,
+                valor,
+                "Depósito realizado"
+        );
+
+        return salvarEConverter(conta);
     }
 
     @Transactional
@@ -223,18 +234,21 @@ public class ContaService {
 
 
     @Transactional
-    public Conta bloquearConta(Long contaId) {
+    public ContaResponseDTO bloquearConta(Long contaId) {
 
-        Conta conta = contaRepository.findById(contaId)
-                .orElseThrow(() -> new ContaNaoEncontradaException("Conta não encontrada"));
+        Conta conta = buscarContaEntity(contaId);
 
         if (conta.getStatus() == StatusConta.BLOQUEADA) {
             throw new ContaBloqueadaException("Conta já está bloqueada");
         }
+        if (conta.getStatus() == StatusConta.INATIVA) {
+            throw new ContaBloqueadaException(
+                    "Não é possível bloquear uma conta encerrada");
+        }
 
         conta.setStatus(StatusConta.BLOQUEADA);
 
-        return contaRepository.save(conta);
+        return salvarEConverter(conta);
     }
 
     @Transactional
