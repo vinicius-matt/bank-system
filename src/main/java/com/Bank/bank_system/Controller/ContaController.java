@@ -23,7 +23,7 @@ public class ContaController {
     }
 
     @PostMapping("/criar")
-    public Conta criarConta(@RequestBody ContaDTO contaDTO) {
+    public ContaResponseDTO criarConta(@RequestBody ContaDTO contaDTO) {
         return  contaService.criarConta(contaDTO);
     }
 

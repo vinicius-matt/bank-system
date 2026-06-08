@@ -64,10 +64,12 @@ public class ContaService {
                         new ContaNaoEncontradaException("Conta não encontrada"));
     }
 
-    public Conta criarConta(ContaDTO contaDTO) {
+    @Transactional
+    public ContaResponseDTO criarConta(ContaDTO contaDTO) {
 
         Cliente cliente = clienteRepository.findById(contaDTO.getClienteId())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() ->
+                        new ClienteNaoEncontradoException("Cliente não encontrado"));
 
         Conta conta = new Conta();
         conta.setCliente(cliente);
@@ -77,7 +79,9 @@ public class ContaService {
         conta.setSaldo(BigDecimal.ZERO);
         conta.setStatus(StatusConta.ATIVA);
 
-        return contaRepository.save(conta);
+        Conta contaSalva = contaRepository.save(conta);
+
+        return toDTO(contaSalva);
     }
 
     private String gerarConta() {
