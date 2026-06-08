@@ -5,6 +5,7 @@ import com.Bank.bank_system.Exception.ClienteCadastradoException;
 import com.Bank.bank_system.Exception.ClienteNaoEncontradoException;
 import com.Bank.bank_system.Repository.ClienteRepository;
 import com.Bank.bank_system.dto.ClienteDTO;
+import com.Bank.bank_system.dto.ClienteResponseDTO;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,6 +15,20 @@ import java.util.List;
 public class ClienteService {
 
     private final ClienteRepository clienteRepository;
+
+    //Auxiliar
+    private Cliente buscarClienteEntity(Long id) {
+        return clienteRepository.findById(id)
+                .orElseThrow(() ->
+                        new ClienteNaoEncontradoException("Cliente não encontrado"));
+    }
+
+    private ClienteResponseDTO toDTO(Cliente cliente) {
+        return new ClienteResponseDTO(
+                cliente.getNome(),
+                cliente.getEmail()
+        );
+    }
 
     public ClienteService(ClienteRepository clienteRepository) {
         this.clienteRepository = clienteRepository;
@@ -39,13 +54,35 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
-    public List<Cliente> listarClientes() {
+    public List<ClienteResponseDTO> listarClientes() {
 
-        return clienteRepository.findAll();
+        return clienteRepository.findAll()
+                .stream()
+                .map(this::toDTO)
+                .toList();
     }
 
-    public Cliente buscarCliente(Long id){
-        return clienteRepository.findById(id).orElseThrow(() -> new ClienteNaoEncontradoException("Cliente nao encontrado"));
+    public ClienteResponseDTO buscarCliente(Long id) {
+        return toDTO(buscarClienteEntity(id));
     }
 
+    public ClienteResponseDTO alterarCliente(Long id, ClienteDTO clienteDTO) {
+
+        Cliente cliente = buscarClienteEntity(id);
+
+        //Refatorar depois de funcionar
+        if (clienteDTO.getNome() != null) {
+            clienteDTO.setNome(clienteDTO.getNome());
+        }
+
+        if (clienteDTO.getCpf() != null) {
+            clienteDTO.setCpf(clienteDTO.getCpf());
+        }
+
+        if (clienteDTO.getEmail() != null) {
+            clienteDTO.setEmail(clienteDTO.getEmail());
+        }
+
+        return toDTO(clienteRepository.save(cliente));
+    }
 }

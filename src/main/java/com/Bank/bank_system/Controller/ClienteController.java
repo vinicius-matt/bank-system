@@ -3,6 +3,7 @@ package com.Bank.bank_system.Controller;
 import com.Bank.bank_system.Entity.Cliente;
 import com.Bank.bank_system.Service.ClienteService;
 import com.Bank.bank_system.dto.ClienteDTO;
+import com.Bank.bank_system.dto.ClienteResponseDTO;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,15 +24,18 @@ public class ClienteController {
     }
 
     @GetMapping("/listar")
-    public List<Cliente> listarClientes(){
+    public List<ClienteResponseDTO> listarClientes(){
         return clienteService.listarClientes();
     }
 
     @GetMapping("/{id}")
-    public Cliente buscarCliente(@PathVariable Long id){
+    public ClienteResponseDTO buscarCliente(@PathVariable Long id){
         return clienteService.buscarCliente(id);
     }
 
-
+    @PutMapping("/{id}")
+    public ClienteResponseDTO atualizarCliente(@PathVariable Long id, @RequestBody ClienteDTO clienteRequest){
+        return clienteService.alterarCliente(id, clienteRequest);
+    }
 
 }
