@@ -237,7 +237,7 @@ public class ContaService {
             throw new ContaBloqueadaException("Conta já está bloqueada");
         }
         if (conta.getStatus() == StatusConta.INATIVA) {
-            throw new ContaBloqueadaException(
+            throw new RegraDeNegocioException(
                     "Não é possível bloquear uma conta encerrada");
         }
 
@@ -256,8 +256,7 @@ public class ContaService {
         }
 
         if (conta.getStatus() == StatusConta.INATIVA) {
-            throw new ContaBloqueadaException(
-                    "Não é possível ativar uma conta encerrada");
+            throw new RegraDeNegocioException("Não é possível ativar uma conta encerrada");
         }
 
         conta.setStatus(StatusConta.ATIVA);
@@ -287,11 +286,12 @@ public class ContaService {
 
         Conta conta = buscarContaEntity(id);
 
-        if (conta.getStatus() == StatusConta.BLOQUEADA ||
-                conta.getStatus() == StatusConta.INATIVA) {
+        if (conta.getStatus() == StatusConta.BLOQUEADA) {
+            throw new RegraDeNegocioException("Conta bloqueada. Operação de consulta de saldo não permitida.");
+        }
 
-            throw new ContaBloqueadaException(
-                    "Conta está bloqueada ou inativa");
+        if (conta.getStatus() == StatusConta.INATIVA) {
+            throw new RegraDeNegocioException("Conta encerrada. Operação de consulta de saldo não permitida.");
         }
 
         return new SaldoResponseDTO(conta.getSaldo());
