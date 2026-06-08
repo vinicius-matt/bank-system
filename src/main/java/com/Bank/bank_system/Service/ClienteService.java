@@ -87,18 +87,28 @@ public class ClienteService {
 
             String celular = clienteDTO.getCelular().trim();
 
-            if (!celular.matches("\\d+")) {
-                throw new CamposIncorretosAtualizacaoException("Celular deve conter apenas números");
+            if (!celular.matches("\\d{10,11}")) {
+                throw new CamposIncorretosAtualizacaoException("Celular inválido");
             }
 
             cliente.setCelular(celular);
         }
 
         if (clienteDTO.getEmail() != null) {
-            throw new CamposIncorretosAtualizacaoException("Email ja cadastrado");
-        }
 
-        cliente.setEmail(clienteDTO.getEmail());
+            String email = clienteDTO.getEmail().trim();
+
+            if (email.isBlank() || "string".equalsIgnoreCase(email)) {
+                throw new CamposIncorretosAtualizacaoException("Email inválido");
+            }
+
+            if (clienteRepository.existsByEmail(email)
+                    && !cliente.getEmail().equals(email)) {
+                throw new ClienteCadastradoException("Email já cadastrado");
+            }
+
+            cliente.setEmail(email);
+        }
 
         Cliente clienteAtualizado = clienteRepository.save(cliente);
 
