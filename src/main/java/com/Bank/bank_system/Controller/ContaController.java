@@ -1,9 +1,6 @@
 package com.Bank.bank_system.Controller;
 
 import com.Bank.bank_system.Entity.Conta;
-import com.Bank.bank_system.Entity.Transacao;
-import com.Bank.bank_system.Repository.ClienteRepository;
-import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Service.ContaService;
 import com.Bank.bank_system.dto.ContaDTO;
 import com.Bank.bank_system.dto.ContaResponseDTO;
@@ -20,13 +17,9 @@ import java.util.Map;
 public class ContaController {
 
     private final ContaService contaService;
-    private final ClienteRepository clienteRepository;
-    private final ContaRepository contaRepository;
-
-    public ContaController(ContaService contaService, ClienteRepository clienteRepository, ContaRepository contaRepository) {
+    public ContaController(ContaService contaService) {
         this.contaService = contaService;
-        this.clienteRepository = clienteRepository;
-        this.contaRepository = contaRepository;
+
     }
 
     @PostMapping("/criar")

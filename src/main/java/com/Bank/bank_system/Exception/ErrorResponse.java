@@ -14,8 +14,4 @@ public class ErrorResponse {
     public ErrorResponse(String mensagem) {
         this.mensagem = mensagem;
     }
-
-    public String getMensagem() {
-        return mensagem;
-    }
 }
