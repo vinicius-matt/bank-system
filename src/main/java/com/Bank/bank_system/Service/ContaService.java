@@ -104,32 +104,33 @@ public class ContaService {
     }
 
     @Transactional
-    public Conta sacar(Long contaId, BigDecimal valor) {
+    public ContaResponseDTO sacar(Long contaId, BigDecimal valor) {
 
-        Conta conta = contaRepository.findById(contaId)
-                .orElseThrow(() -> new ContaNaoEncontradaException("Conta não encontrada"));
+        Conta conta = buscarContaEntity(contaId);
 
         validarContaAtiva(conta);
 
-        BigDecimal saldoDisponivel = conta.getSaldo()
-                .add(conta.getLimite());
+        BigDecimal saldoDisponivel =
+                conta.getSaldo().add(conta.getLimite());
 
-        //Validando se é um valor valido para transferencia
         if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Valor inválido");
+            throw new IllegalArgumentException("Valor inválido");
         }
 
-        //Validando limite + saldo na transferencia
         if (saldoDisponivel.compareTo(valor) < 0) {
-            throw new SaldoInsuficienteException("Saldo + Limite insuficientes ");
+            throw new SaldoInsuficienteException("Saldo + limite insuficientes");
         }
 
         conta.setSaldo(conta.getSaldo().subtract(valor));
 
-        registrarTransacao(conta, TransactionType.SAQUE, valor, "Saque realizado");
+        registrarTransacao(
+                conta,
+                TransactionType.SAQUE,
+                valor,
+                "Saque realizado"
+        );
 
-        return contaRepository.save(conta);
-
+        return toDTO(contaRepository.save(conta));
     }
 
     @Transactional
@@ -259,20 +260,20 @@ public class ContaService {
     @Transactional(readOnly = true)
     public ContaResponseDTO buscarConta(Long id) {
 
-        Conta conta = buscarContaEntity(id);
+        Conta ContaResponseDTO = buscarContaEntity(id);
 
-        return toDTO(conta);
+        return toDTO(ContaResponseDTO);
     }
 
     @Transactional
     public Map<String, BigDecimal> consultarSaldo(Long id) {
-        Conta conta = buscarContaEntity(id);
+        Conta ContaResponseDTO = buscarContaEntity(id);
 
-        if (conta.getStatus() == StatusConta.BLOQUEADA || conta.getStatus() == StatusConta.INATIVA) {
+        if (ContaResponseDTO.getStatus() == StatusConta.BLOQUEADA || ContaResponseDTO.getStatus() == StatusConta.INATIVA) {
             throw new ContaBloqueadaException("Conta esta bloqueada ou Inativa");
         }
 
-        return Map.of("saldo", conta.getSaldo());
+        return Map.of("saldo", ContaResponseDTO.getSaldo());
     }
 
     @Transactional
