@@ -156,10 +156,7 @@ public class ContaService {
         Conta conta = buscarContaEntity(contaId);
 
         validarContaAtiva(conta);
-
-        if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Valor inválido");
-        }
+        validarValor(valor);
 
         conta.setSaldo(conta.getSaldo().add(valor));
 
