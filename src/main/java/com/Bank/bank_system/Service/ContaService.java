@@ -8,6 +8,7 @@ import com.Bank.bank_system.Repository.ClienteRepository;
 import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Repository.TransacaoRepository;
 import com.Bank.bank_system.dto.ContaResponseDTO;
+import com.Bank.bank_system.dto.SaldoResponseDTO;
 import com.Bank.bank_system.dto.TransacaoResponseDTO;
 import com.Bank.bank_system.model.StatusConta;
 import com.Bank.bank_system.dto.ContaDTO;
@@ -252,10 +253,9 @@ public class ContaService {
     }
 
     @Transactional
-    public ContaResponseDTO ativarConta(Long contaId) {
+    public ContaResponseDTO ativarConta(Long id) {
 
-        Conta conta = contaRepository.findById(contaId)
-                .orElseThrow(() -> new ContaNaoEncontradaException("Conta não encontrada"));
+        Conta conta = buscarContaEntity(id);
 
         if (conta.getStatus() == StatusConta.ATIVA) {
             throw new ContaJaAtivaException("Conta já está ativa");
@@ -278,24 +278,28 @@ public class ContaService {
     @Transactional(readOnly = true)
     public ContaResponseDTO buscarConta(Long id) {
 
-        Conta ContaResponseDTO = buscarContaEntity(id);
+        Conta conta = buscarContaEntity(id);
 
-        return toDTO(ContaResponseDTO);
+        return toDTO(conta);
     }
 
-    @Transactional
-    public Map<String, BigDecimal> consultarSaldo(Long id) {
-        Conta ContaResponseDTO = buscarContaEntity(id);
+    @Transactional(readOnly = true)
+    public SaldoResponseDTO consultarSaldo(Long id) {
 
-        if (ContaResponseDTO.getStatus() == StatusConta.BLOQUEADA || ContaResponseDTO.getStatus() == StatusConta.INATIVA) {
-            throw new ContaBloqueadaException("Conta esta bloqueada ou Inativa");
+        Conta conta = buscarContaEntity(id);
+
+        if (conta.getStatus() == StatusConta.BLOQUEADA ||
+                conta.getStatus() == StatusConta.INATIVA) {
+
+            throw new ContaBloqueadaException(
+                    "Conta está bloqueada ou inativa");
         }
 
-        return Map.of("saldo", ContaResponseDTO.getSaldo());
+        return new SaldoResponseDTO(conta.getSaldo());
     }
 
     @Transactional
-    public Conta encerrarConta(Long id) {
+    public ContaResponseDTO encerrarConta(Long id) {
         Conta conta = buscarContaEntity(id);
 
         if (conta.getSaldo().compareTo(BigDecimal.ZERO) > 0) {
@@ -308,10 +312,10 @@ public class ContaService {
 
         conta.setStatus(StatusConta.INATIVA);
 
-        return contaRepository.save(conta);
+        return salvarEConverter(conta);
     }
 
-    public Conta alterarLimite(Long id, BigDecimal valor) {
+    public ContaResponseDTO alterarLimite(Long id, BigDecimal valor) {
         Conta conta = buscarContaEntity(id);
 
         if (conta.getStatus() == StatusConta.BLOQUEADA ||  conta.getStatus() == StatusConta.INATIVA) {
@@ -324,7 +328,7 @@ public class ContaService {
 
         conta.setLimite(conta.getLimite().add(valor));
 
-        return  contaRepository.save(conta);
+        return salvarEConverter(conta);
     }
 
 }

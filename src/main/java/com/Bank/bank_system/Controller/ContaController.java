@@ -2,10 +2,7 @@ package com.Bank.bank_system.Controller;
 
 import com.Bank.bank_system.Entity.Conta;
 import com.Bank.bank_system.Service.ContaService;
-import com.Bank.bank_system.dto.ContaDTO;
-import com.Bank.bank_system.dto.ContaResponseDTO;
-import com.Bank.bank_system.dto.TransacaoResponseDTO;
-import com.Bank.bank_system.dto.TransferenciaDTO;
+import com.Bank.bank_system.dto.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -68,17 +65,17 @@ public class ContaController {
     }
 
     @GetMapping("/{id}/saldo")
-    public Map<String, BigDecimal> consultarSaldo(@PathVariable Long id){
+    public SaldoResponseDTO consultarSaldo(@PathVariable Long id){
         return contaService.consultarSaldo(id);
     }
 
     @PutMapping("/{id}/encerrar")
-    public void encerrar(@PathVariable Long id){
+    public void encerrarConta(@PathVariable Long id){
         contaService.encerrarConta(id);
     }
 
     @PutMapping("/{id}/alterarLimite")
-        public Conta alterarLimite(@PathVariable Long id, BigDecimal valor){
+        public ContaResponseDTO alterarLimite(@PathVariable Long id, BigDecimal valor){
        return contaService.alterarLimite(id, valor);
     }
 
