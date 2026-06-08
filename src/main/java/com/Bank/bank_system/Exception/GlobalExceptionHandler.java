@@ -76,4 +76,13 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
+    @ExceptionHandler(CamposIncorretosAtualizacaoException.class)
+    public ResponseEntity<ErrorResponse> handleCamposIncorretosAtualizacao(
+            CamposIncorretosAtualizacaoException ex
+    ){
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.Bank.bank_system.Service;
 
 import com.Bank.bank_system.Entity.Cliente;
+import com.Bank.bank_system.Exception.CamposIncorretosAtualizacaoException;
 import com.Bank.bank_system.Exception.ClienteCadastradoException;
 import com.Bank.bank_system.Exception.ClienteNaoEncontradoException;
 import com.Bank.bank_system.Repository.ClienteRepository;
@@ -27,7 +28,8 @@ public class ClienteService {
     private ClienteResponseDTO toDTO(Cliente cliente) {
         return new ClienteResponseDTO(
                 cliente.getNome(),
-                cliente.getEmail()
+                cliente.getEmail(),
+                cliente.getCelular()
         );
     }
 
@@ -76,7 +78,7 @@ public class ClienteService {
             String nome = clienteDTO.getNome().trim();
 
             if (nome.isBlank() || "string".equalsIgnoreCase(nome)) {
-                throw new IllegalArgumentException("Nome inválido");
+                throw new CamposIncorretosAtualizacaoException("Nome inválido");
             }
 
             cliente.setNome(nome);
@@ -87,15 +89,17 @@ public class ClienteService {
             String celular = clienteDTO.getCelular().trim();
 
             if (!celular.matches("\\d+")) {
-                throw new IllegalArgumentException("Celular deve conter apenas números");
+                throw new CamposIncorretosAtualizacaoException("Celular deve conter apenas números");
             }
 
             cliente.setCelular(celular);
         }
 
         if (clienteDTO.getEmail() != null) {
-            cliente.setEmail(clienteDTO.getEmail());
+            throw new CamposIncorretosAtualizacaoException("Email ja cadastrado");
         }
+
+        cliente.setEmail(clienteDTO.getEmail());
 
         Cliente clienteAtualizado = clienteRepository.save(cliente);
 
