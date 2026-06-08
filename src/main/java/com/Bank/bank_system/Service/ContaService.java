@@ -199,12 +199,15 @@ public class ContaService {
         contaRepository.save(destino);
     }
 
-    public List<Transacao> extrato(Long contaId) {
-        //vendo se existe
-        contaRepository.findById(contaId)
-                .orElseThrow(() -> new ContaNaoEncontradaException("Conta não encontrada"));
+    @Transactional(readOnly = true)
+    public List<TransacaoResponseDTO> extrato(Long contaId) {
 
-        return transacaoRepository.findByContaId(contaId);
+        buscarContaEntity(contaId);
+
+        return transacaoRepository.findByContaId(contaId)
+                .stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     private void validarContaAtiva(Conta conta) {

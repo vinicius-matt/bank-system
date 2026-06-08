@@ -7,6 +7,7 @@ import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Service.ContaService;
 import com.Bank.bank_system.dto.ContaDTO;
 import com.Bank.bank_system.dto.ContaResponseDTO;
+import com.Bank.bank_system.dto.TransacaoResponseDTO;
 import com.Bank.bank_system.dto.TransferenciaDTO;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,7 +70,7 @@ public class ContaController {
     }
 
     @GetMapping("/{id}/extrato")
-    public List<Transacao> extrato(@PathVariable Long id) {
+    public List<TransacaoResponseDTO> extrato(@PathVariable Long id) {
         return contaService.extrato(id);
     }
 
