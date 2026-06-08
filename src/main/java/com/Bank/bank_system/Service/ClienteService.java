@@ -6,6 +6,7 @@ import com.Bank.bank_system.Exception.ClienteNaoEncontradoException;
 import com.Bank.bank_system.Repository.ClienteRepository;
 import com.Bank.bank_system.dto.ClienteDTO;
 import com.Bank.bank_system.dto.ClienteResponseDTO;
+import com.Bank.bank_system.dto.ClienteUpdateDTO;
 import org.springframework.stereotype.Service;
 
 
@@ -66,23 +67,24 @@ public class ClienteService {
         return toDTO(buscarClienteEntity(id));
     }
 
-    public ClienteResponseDTO alterarCliente(Long id, ClienteDTO clienteDTO) {
+    public ClienteResponseDTO alterarCliente(Long id, ClienteUpdateDTO clienteDTO) {
 
         Cliente cliente = buscarClienteEntity(id);
 
-        //Refatorar depois de funcionar
         if (clienteDTO.getNome() != null) {
-            clienteDTO.setNome(clienteDTO.getNome());
-        }
-
-        if (clienteDTO.getCpf() != null) {
-            clienteDTO.setCpf(clienteDTO.getCpf());
+            cliente.setNome(clienteDTO.getNome());
         }
 
         if (clienteDTO.getEmail() != null) {
-            clienteDTO.setEmail(clienteDTO.getEmail());
+            cliente.setEmail(clienteDTO.getEmail());
         }
 
-        return toDTO(clienteRepository.save(cliente));
+        if (clienteDTO.getCelular() != null) {
+            cliente.setCelular(clienteDTO.getCelular());
+        }
+
+        clienteRepository.save(cliente);
+
+        return toDTO(cliente);
     }
 }

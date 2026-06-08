@@ -4,6 +4,7 @@ import com.Bank.bank_system.Entity.Cliente;
 import com.Bank.bank_system.Service.ClienteService;
 import com.Bank.bank_system.dto.ClienteDTO;
 import com.Bank.bank_system.dto.ClienteResponseDTO;
+import com.Bank.bank_system.dto.ClienteUpdateDTO;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ClienteResponseDTO atualizarCliente(@PathVariable Long id, @RequestBody ClienteDTO clienteRequest){
+    public ClienteResponseDTO atualizarCliente(@PathVariable Long id, @RequestBody ClienteUpdateDTO clienteRequest){
         return clienteService.alterarCliente(id, clienteRequest);
     }
 
