@@ -1,13 +1,11 @@
 package com.Bank.bank_system.Controller;
 
-import com.Bank.bank_system.Entity.Conta;
 import com.Bank.bank_system.Service.ContaService;
 import com.Bank.bank_system.dto.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/conta")
