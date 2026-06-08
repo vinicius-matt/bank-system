@@ -72,19 +72,33 @@ public class ClienteService {
         Cliente cliente = buscarClienteEntity(id);
 
         if (clienteDTO.getNome() != null) {
-            cliente.setNome(clienteDTO.getNome());
+
+            String nome = clienteDTO.getNome().trim();
+
+            if (nome.isBlank() || "string".equalsIgnoreCase(nome)) {
+                throw new IllegalArgumentException("Nome inválido");
+            }
+
+            cliente.setNome(nome);
+        }
+
+        if (clienteDTO.getCelular() != null) {
+
+            String celular = clienteDTO.getCelular().trim();
+
+            if (!celular.matches("\\d+")) {
+                throw new IllegalArgumentException("Celular deve conter apenas números");
+            }
+
+            cliente.setCelular(celular);
         }
 
         if (clienteDTO.getEmail() != null) {
             cliente.setEmail(clienteDTO.getEmail());
         }
 
-        if (clienteDTO.getCelular() != null) {
-            cliente.setCelular(clienteDTO.getCelular());
-        }
+        Cliente clienteAtualizado = clienteRepository.save(cliente);
 
-        clienteRepository.save(cliente);
-
-        return toDTO(cliente);
+        return toDTO(clienteAtualizado);
     }
 }

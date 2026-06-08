@@ -5,6 +5,7 @@ import com.Bank.bank_system.Service.ClienteService;
 import com.Bank.bank_system.dto.ClienteDTO;
 import com.Bank.bank_system.dto.ClienteResponseDTO;
 import com.Bank.bank_system.dto.ClienteUpdateDTO;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,8 +35,11 @@ public class ClienteController {
         return clienteService.buscarCliente(id);
     }
 
-    @PutMapping("/{id}")
-    public ClienteResponseDTO atualizarCliente(@PathVariable Long id, @RequestBody ClienteUpdateDTO clienteRequest){
+    @PatchMapping("/{id}")
+    public ClienteResponseDTO atualizarCliente(
+            @PathVariable Long id,
+            @Valid @RequestBody ClienteUpdateDTO clienteRequest) {
+
         return clienteService.alterarCliente(id, clienteRequest);
     }
 
