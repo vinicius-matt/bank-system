@@ -43,12 +43,12 @@ public class ContaController {
     }
 
     @PutMapping("/{id}/Bloquear")
-        public Conta bloquear(@PathVariable Long id){
+        public ContaResponseDTO bloquear(@PathVariable Long id){
         return contaService.bloquearConta(id);
     }
 
     @PutMapping("/{id}/Ativar")
-    public Conta ativar(@PathVariable Long id){
+    public ContaResponseDTO ativar(@PathVariable Long id){
         return contaService.ativarConta(id);
     }
 

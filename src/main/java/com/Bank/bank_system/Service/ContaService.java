@@ -252,7 +252,7 @@ public class ContaService {
     }
 
     @Transactional
-    public Conta ativarConta(Long contaId) {
+    public ContaResponseDTO ativarConta(Long contaId) {
 
         Conta conta = contaRepository.findById(contaId)
                 .orElseThrow(() -> new ContaNaoEncontradaException("Conta não encontrada"));
@@ -263,7 +263,7 @@ public class ContaService {
 
         conta.setStatus(StatusConta.ATIVA);
 
-        return contaRepository.save(conta);
+        return salvarEConverter(conta);
     }
 
     @Transactional(readOnly = true)
