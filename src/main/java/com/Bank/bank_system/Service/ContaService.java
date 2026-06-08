@@ -84,9 +84,9 @@ public class ContaService {
         conta.setSaldo(BigDecimal.ZERO);
         conta.setStatus(StatusConta.ATIVA);
 
-        Conta contaSalva = contaRepository.save(conta);
+        //Conta contaSalva = contaRepository.save(conta);
 
-        return toDTO(contaSalva);
+        return salvarEConverter(conta);
     }
 
     private String gerarConta() {
@@ -139,7 +139,7 @@ public class ContaService {
                 "Saque realizado"
         );
 
-        return toDTO(contaRepository.save(conta));
+        return salvarEConverter(conta);
     }
 
     @Transactional
@@ -258,6 +258,11 @@ public class ContaService {
 
         if (conta.getStatus() == StatusConta.ATIVA) {
             throw new ContaJaAtivaException("Conta já está ativa");
+        }
+
+        if (conta.getStatus() == StatusConta.INATIVA) {
+            throw new ContaBloqueadaException(
+                    "Não é possível ativar uma conta encerrada");
         }
 
         conta.setStatus(StatusConta.ATIVA);
