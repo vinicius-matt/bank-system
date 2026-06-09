@@ -43,6 +43,24 @@ class ContaServiceTest {
     @InjectMocks
     private ContaService contaService;
 
+    //auxiliar
+    private Conta criarContaPadrao() {
+
+        Cliente cliente = new Cliente();
+        cliente.setId(1L);
+
+        Conta conta = new Conta();
+        conta.setId(1L);
+        conta.setCliente(cliente);
+        conta.setNumero("12345678");
+        conta.setSaldo(BigDecimal.valueOf(1000));
+        conta.setLimite(BigDecimal.ZERO);
+        conta.setTipo(TipoConta.CORRENTE);
+        conta.setStatus(StatusConta.ATIVA);
+
+        return conta;
+    }
+
     @Test
     void deveCriarContaComSucesso() {
 
@@ -413,6 +431,32 @@ class ContaServiceTest {
                         2L,
                         BigDecimal.valueOf(100)
                 )
+        );
+    }
+
+    @Test
+    void deveBloquearContaComSucesso() {
+
+        Cliente cliente = new Cliente();
+        cliente.setId(1L);
+
+        Conta conta = new Conta();
+        conta.setId(1L);
+        conta.setCliente(cliente);
+        conta.setStatus(StatusConta.ATIVA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        when(contaRepository.save(any(Conta.class)))
+                .thenAnswer(i -> i.getArgument(0));
+
+        ContaResponseDTO resultado =
+                contaService.bloquearConta(1L);
+
+        assertEquals(
+                StatusConta.BLOQUEADA,
+                resultado.getStatus()
         );
     }
 }
