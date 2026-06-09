@@ -3,8 +3,10 @@ package com.Bank.bank_system.Service;
 
 import com.Bank.bank_system.Entity.Cliente;
 import com.Bank.bank_system.Entity.Conta;
+import com.Bank.bank_system.Entity.Transacao;
 import com.Bank.bank_system.Exception.ClienteNaoEncontradoException;
 import com.Bank.bank_system.Exception.ContaNaoEncontradaException;
+import com.Bank.bank_system.Exception.SaldoInsuficienteException;
 import com.Bank.bank_system.Repository.ClienteRepository;
 import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Repository.TransacaoRepository;
@@ -190,6 +192,74 @@ class ContaServiceTest {
                 () -> contaService.depositar(
                         1L,
                         BigDecimal.ZERO
+                )
+        );
+    }
+
+    @Test
+    void deveSacarComSucesso() {
+
+        // Arrange
+        Cliente cliente = new Cliente();
+        cliente.setId(1L);
+
+        Conta conta = new Conta();
+        conta.setId(1L);
+        conta.setCliente(cliente);
+        conta.setSaldo(BigDecimal.valueOf(1000));
+        conta.setLimite(BigDecimal.ZERO);
+        conta.setStatus(StatusConta.ATIVA);
+        conta.setTipo(TipoConta.CORRENTE);
+        conta.setNumero("12345678");
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        when(contaRepository.save(any(Conta.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        ContaResponseDTO resultado =
+                contaService.sacar(1L, BigDecimal.valueOf(200));
+
+        // Assert
+        assertNotNull(resultado);
+
+        assertEquals(
+                BigDecimal.valueOf(800),
+                resultado.getSaldo()
+        );
+
+        verify(contaRepository).save(any(Conta.class));
+
+        verify(transacaoRepository).save(any(Transacao.class));
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoSaldoInsuficiente() {
+
+        // Arrange
+        Cliente cliente = new Cliente();
+        cliente.setId(1L);
+
+        Conta conta = new Conta();
+        conta.setId(1L);
+        conta.setCliente(cliente);
+        conta.setSaldo(BigDecimal.valueOf(100));
+        conta.setLimite(BigDecimal.ZERO);
+        conta.setStatus(StatusConta.ATIVA);
+        conta.setTipo(TipoConta.CORRENTE);
+        conta.setNumero("12345678");
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        // Act + Assert
+        assertThrows(
+                SaldoInsuficienteException.class,
+                () -> contaService.sacar(
+                        1L,
+                        BigDecimal.valueOf(200)
                 )
         );
     }
