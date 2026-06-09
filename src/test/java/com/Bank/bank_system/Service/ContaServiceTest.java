@@ -4,9 +4,7 @@ package com.Bank.bank_system.Service;
 import com.Bank.bank_system.Entity.Cliente;
 import com.Bank.bank_system.Entity.Conta;
 import com.Bank.bank_system.Entity.Transacao;
-import com.Bank.bank_system.Exception.ClienteNaoEncontradoException;
-import com.Bank.bank_system.Exception.ContaNaoEncontradaException;
-import com.Bank.bank_system.Exception.SaldoInsuficienteException;
+import com.Bank.bank_system.Exception.*;
 import com.Bank.bank_system.Repository.ClienteRepository;
 import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Repository.TransacaoRepository;
@@ -457,6 +455,110 @@ class ContaServiceTest {
         assertEquals(
                 StatusConta.BLOQUEADA,
                 resultado.getStatus()
+        );
+    }
+
+    @Test
+    void deveAtivarContaComSucesso() {
+
+        Cliente cliente = new Cliente();
+        cliente.setId(1L);
+
+        Conta conta = new Conta();
+        conta.setId(1L);
+        conta.setCliente(cliente);
+        conta.setStatus(StatusConta.BLOQUEADA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        when(contaRepository.save(any(Conta.class)))
+                .thenAnswer(i -> i.getArgument(0));
+
+        ContaResponseDTO resultado =
+                contaService.ativarConta(1L);
+
+        assertEquals(
+                StatusConta.ATIVA,
+                resultado.getStatus()
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoContaJaEstiverAtiva() {
+
+        Conta conta = new Conta();
+        conta.setId(1L);
+        conta.setStatus(StatusConta.ATIVA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        assertThrows(
+                ContaJaAtivaException.class,
+                () -> contaService.ativarConta(1L)
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoContaEstiverEncerradaAoAtivar() {
+
+        Conta conta = new Conta();
+        conta.setId(1L);
+        conta.setStatus(StatusConta.INATIVA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        assertThrows(
+                RegraDeNegocioException.class,
+                () -> contaService.ativarConta(1L)
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoContaJaEstiverBloqueada() {
+
+        Conta conta = new Conta();
+        conta.setId(1L);
+        conta.setStatus(StatusConta.BLOQUEADA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        assertThrows(
+                ContaBloqueadaException.class,
+                () -> contaService.bloquearConta(1L)
+        );
+    }
+
+    @Test
+    void deveAlterarLimiteComSucesso() {
+
+        Cliente cliente = new Cliente();
+        cliente.setId(1L);
+
+        Conta conta = new Conta();
+        conta.setId(1L);
+        conta.setCliente(cliente);
+        conta.setLimite(BigDecimal.valueOf(500));
+        conta.setStatus(StatusConta.ATIVA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        when(contaRepository.save(any(Conta.class)))
+                .thenAnswer(i -> i.getArgument(0));
+
+        ContaResponseDTO resultado =
+                contaService.aumentarlimite(
+                        1L,
+                        BigDecimal.valueOf(200)
+                );
+
+        assertEquals(
+                BigDecimal.valueOf(700),
+                resultado.getLimite()
         );
     }
 }
