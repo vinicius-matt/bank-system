@@ -314,7 +314,7 @@ public class ContaService {
         return salvarEConverter(conta);
     }
 
-    public ContaResponseDTO alterarLimite(Long id, BigDecimal valor) {
+    public ContaResponseDTO aumentarlimite(Long id, BigDecimal valor) {
         Conta conta = buscarContaEntity(id);
 
         if (conta.getStatus() == StatusConta.BLOQUEADA ||  conta.getStatus() == StatusConta.INATIVA) {

@@ -74,8 +74,8 @@ public class ContaController {
     }
 
     @PutMapping("/{id}/alterarLimite")
-        public ContaResponseDTO alterarLimite(@PathVariable Long id, BigDecimal valor){
-       return contaService.alterarLimite(id, valor);
+        public ContaResponseDTO aumentarlimite(@PathVariable Long id, BigDecimal valor){
+       return contaService.aumentarlimite(id, valor);
     }
 
 }
