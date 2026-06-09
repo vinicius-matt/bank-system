@@ -301,12 +301,13 @@ public class ContaService {
     public ContaResponseDTO encerrarConta(Long id) {
         Conta conta = buscarContaEntity(id);
 
-        if (conta.getSaldo().compareTo(BigDecimal.ZERO) > 0) {
-            throw new EncerrarContaException("Não é possível encerrar uma conta com saldo disponível");
-        }
-
         if (conta.getStatus() == StatusConta.INATIVA) {
             throw new EncerrarContaException("Esta conta ja foi encerrada");
+        }
+
+        if (conta.getSaldo().compareTo(BigDecimal.ZERO) != 0) {
+            throw new EncerrarContaException(
+                    "A conta deve estar com saldo zerado para ser encerrada");
         }
 
         conta.setStatus(StatusConta.INATIVA);
