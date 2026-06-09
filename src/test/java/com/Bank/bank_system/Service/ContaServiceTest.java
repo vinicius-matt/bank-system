@@ -26,8 +26,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ContaServiceTest {
@@ -260,6 +259,159 @@ class ContaServiceTest {
                 () -> contaService.sacar(
                         1L,
                         BigDecimal.valueOf(200)
+                )
+        );
+    }
+
+    @Test
+    void deveTransferirComSucesso() {
+
+        // Arrange
+
+        Cliente clienteOrigem = new Cliente();
+        clienteOrigem.setId(1L);
+
+        Cliente clienteDestino = new Cliente();
+        clienteDestino.setId(2L);
+
+        Conta origem = new Conta();
+        origem.setId(1L);
+        origem.setCliente(clienteOrigem);
+        origem.setSaldo(BigDecimal.valueOf(1000));
+        origem.setLimite(BigDecimal.ZERO);
+        origem.setStatus(StatusConta.ATIVA);
+
+        Conta destino = new Conta();
+        destino.setId(2L);
+        destino.setCliente(clienteDestino);
+        destino.setSaldo(BigDecimal.valueOf(500));
+        destino.setLimite(BigDecimal.ZERO);
+        destino.setStatus(StatusConta.ATIVA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(origem));
+
+        when(contaRepository.findById(2L))
+                .thenReturn(Optional.of(destino));
+
+        // Act
+
+        contaService.transferir(
+                1L,
+                2L,
+                BigDecimal.valueOf(200)
+        );
+
+        // Assert
+
+        assertEquals(
+                BigDecimal.valueOf(800),
+                origem.getSaldo()
+        );
+
+        assertEquals(
+                BigDecimal.valueOf(700),
+                destino.getSaldo()
+        );
+
+        verify(contaRepository).save(origem);
+        verify(contaRepository).save(destino);
+
+        verify(transacaoRepository, times(2))
+                .save(any(Transacao.class));
+    }
+
+    @Test
+    void deveLancarExcecaoAoTransferirParaMesmaConta() {
+
+        //Arrange
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> contaService.transferir(
+                                1L,
+                                1L,
+                                BigDecimal.valueOf(100)
+                        )
+                );
+
+        //Act + assert
+        assertEquals(
+                "Não é possível transferir para a mesma conta",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoSaldoInsuficienteNaTransferencia() {
+
+        //Arrange
+        Cliente cliente = new Cliente();
+        cliente.setId(1L);
+
+        Conta origem = new Conta();
+        origem.setId(1L);
+        origem.setCliente(cliente);
+        origem.setSaldo(BigDecimal.valueOf(100));
+        origem.setLimite(BigDecimal.ZERO);
+        origem.setStatus(StatusConta.ATIVA);
+
+        Conta destino = new Conta();
+        destino.setId(2L);
+        destino.setStatus(StatusConta.ATIVA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(origem));
+
+        when(contaRepository.findById(2L))
+                .thenReturn(Optional.of(destino));
+
+        //Act and assert
+        assertThrows(
+                SaldoInsuficienteException.class,
+                () -> contaService.transferir(
+                        1L,
+                        2L,
+                        BigDecimal.valueOf(200)
+                )
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoContaOrigemNaoEncontrada() {
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                ContaNaoEncontradaException.class,
+                () -> contaService.transferir(
+                        1L,
+                        2L,
+                        BigDecimal.valueOf(100)
+                )
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoContaDestinoNaoEncontrada() {
+
+        Conta origem = new Conta();
+        origem.setId(1L);
+        origem.setStatus(StatusConta.ATIVA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(origem));
+
+        when(contaRepository.findById(2L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                ContaNaoEncontradaException.class,
+                () -> contaService.transferir(
+                        1L,
+                        2L,
+                        BigDecimal.valueOf(100)
                 )
         );
     }
