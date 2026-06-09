@@ -3,6 +3,8 @@ package com.Bank.bank_system.Service;
 
 import com.Bank.bank_system.Entity.Cliente;
 import com.Bank.bank_system.Entity.Conta;
+import com.Bank.bank_system.Exception.ClienteNaoEncontradoException;
+import com.Bank.bank_system.Exception.ContaNaoEncontradaException;
 import com.Bank.bank_system.Repository.ClienteRepository;
 import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Repository.TransacaoRepository;
@@ -19,10 +21,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -93,6 +95,102 @@ class ContaServiceTest {
         assertEquals(
                 cliente.getId(),
                 resultado.getClienteId()
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoClienteNaoEncontrado() {
+
+        //Arrange
+        ContaDTO contaDTO = new ContaDTO();
+        contaDTO.setClienteId(1L);
+        contaDTO.setTipoConta(TipoConta.CORRENTE);
+
+        when(clienteRepository.findById(1L)).thenReturn(Optional.empty());
+
+        //Act and Assert
+        assertThrows(
+                ClienteNaoEncontradoException.class,
+                () -> contaService.criarConta(contaDTO)
+        );
+
+    }
+
+    @Test
+    void deveDepositarComSucesso() {
+
+        // Arrange
+        Cliente cliente = new Cliente();
+        cliente.setId(1L);
+
+        Conta conta = new Conta();
+        conta.setId(1L);
+        conta.setCliente(cliente);
+        conta.setSaldo(BigDecimal.valueOf(100));
+        conta.setLimite(BigDecimal.ZERO);
+        conta.setStatus(StatusConta.ATIVA);
+        conta.setTipo(TipoConta.CORRENTE);
+        conta.setNumero("12345678");
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        when(contaRepository.save(any(Conta.class)))
+                .thenAnswer(i -> i.getArgument(0));
+
+        // Act
+        ContaResponseDTO resultado =
+                contaService.depositar(1L, BigDecimal.valueOf(50));
+
+        // Assert
+        assertEquals(
+                BigDecimal.valueOf(150),
+                resultado.getSaldo()
+        );
+
+        verify(contaRepository).save(conta);
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoContaNaoEncontrada() {
+
+        // Arrange
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        // Act and Assert
+        assertThrows(
+                ContaNaoEncontradaException.class,
+                () -> contaService.depositar(
+                        1L,
+                        BigDecimal.valueOf(50)
+                )
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoAoDepositarValorInvalido() {
+
+        // Arrange
+        Cliente cliente = new Cliente();
+        cliente.setId(1L);
+
+        Conta conta = new Conta();
+        conta.setId(1L);
+        conta.setCliente(cliente);
+        conta.setSaldo(BigDecimal.valueOf(100));
+        conta.setStatus(StatusConta.ATIVA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        // Act and Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> contaService.depositar(
+                        1L,
+                        BigDecimal.ZERO
+                )
         );
     }
 }
