@@ -425,3 +425,4 @@ BankSystemApplication
 Matheus Vinicius
 
 Projeto desenvolvido para estudos de Java, Spring Boot, APIs REST, arquitetura em camadas e boas práticas de desenvolvimento backend.
+(Não finalizado)
