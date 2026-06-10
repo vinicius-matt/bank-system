@@ -409,9 +409,8 @@ BankSystemApplication
 
 * Autenticação JWT
 * Controle de usuários e permissões
-* Swagger/OpenAPI
 * Docker
-* Testes Unitários (JUnit + Mockito)
+* Testes Unitários (JUnit + Mockito)*
 * Testes de Integração
 * Logs estruturados
 * Paginação
