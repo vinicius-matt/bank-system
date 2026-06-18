@@ -10,8 +10,11 @@ import com.Bank.bank_system.Repository.ContaRepository;
 import com.Bank.bank_system.Repository.TransacaoRepository;
 import com.Bank.bank_system.dto.ContaDTO;
 import com.Bank.bank_system.dto.ContaResponseDTO;
+import com.Bank.bank_system.dto.SaldoResponseDTO;
+import com.Bank.bank_system.dto.TransacaoResponseDTO;
 import com.Bank.bank_system.model.StatusConta;
 import com.Bank.bank_system.model.TipoConta;
+import com.Bank.bank_system.model.TransactionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +22,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -559,6 +564,209 @@ class ContaServiceTest {
         assertEquals(
                 BigDecimal.valueOf(700),
                 resultado.getLimite()
+        );
+    }
+    @Test
+    void deveLancarExcecaoQuandoValorLimiteForInvalido() {
+
+        Conta conta = criarContaPadrao();
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> contaService.aumentarlimite(
+                        1L,
+                        BigDecimal.ZERO
+                )
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoContaBloqueadaAoAlterarLimite() {
+
+        Conta conta = criarContaPadrao();
+        conta.setStatus(StatusConta.BLOQUEADA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        assertThrows(
+                ContaBloqueadaException.class,
+                () -> contaService.aumentarlimite(
+                        1L,
+                        BigDecimal.valueOf(100)
+                )
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoContaInativaAoAlterarLimite() {
+
+        Conta conta = criarContaPadrao();
+        conta.setStatus(StatusConta.INATIVA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        assertThrows(
+                ContaBloqueadaException.class,
+                () -> contaService.aumentarlimite(
+                        1L,
+                        BigDecimal.valueOf(100)
+                )
+        );
+    }
+
+    @Test
+    void deveEncerrarContaComSucesso() {
+
+        Conta conta = criarContaPadrao();
+        conta.setSaldo(BigDecimal.ZERO);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        when(contaRepository.save(any(Conta.class)))
+                .thenAnswer(i -> i.getArgument(0));
+
+        ContaResponseDTO resultado =
+                contaService.encerrarConta(1L);
+
+        assertEquals(
+                StatusConta.INATIVA,
+                resultado.getStatus()
+        );
+
+        verify(contaRepository).save(conta);
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoContaPossuirSaldo() {
+
+        Conta conta = criarContaPadrao();
+        conta.setSaldo(BigDecimal.valueOf(500));
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        assertThrows(
+                EncerrarContaException.class,
+                () -> contaService.encerrarConta(1L)
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoContaJaEstiverEncerrada() {
+
+        Conta conta = criarContaPadrao();
+        conta.setSaldo(BigDecimal.ZERO);
+        conta.setStatus(StatusConta.INATIVA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        assertThrows(
+                EncerrarContaException.class,
+                () -> contaService.encerrarConta(1L)
+        );
+    }
+
+    @Test
+    void deveConsultarSaldoComSucesso() {
+
+        Conta conta = criarContaPadrao();
+        conta.setSaldo(BigDecimal.valueOf(1500));
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        SaldoResponseDTO resultado =
+                contaService.consultarSaldo(1L);
+
+        assertNotNull(resultado);
+
+        assertEquals(
+                BigDecimal.valueOf(1500),
+                resultado.getSaldo()
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoContaBloqueadaAoConsultarSaldo() {
+
+        Conta conta = criarContaPadrao();
+        conta.setStatus(StatusConta.BLOQUEADA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        assertThrows(
+                ContaBloqueadaException.class,
+                () -> contaService.consultarSaldo(1L)
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoContaInativaAoConsultarSaldo() {
+
+        Conta conta = criarContaPadrao();
+        conta.setStatus(StatusConta.INATIVA);
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        assertThrows(
+                ContaBloqueadaException.class,
+                () -> contaService.consultarSaldo(1L)
+        );
+    }
+
+    @Test
+    void deveRetornarExtratoComSucesso() {
+
+        Conta conta = criarContaPadrao();
+
+        Transacao transacao = new Transacao();
+        transacao.setId(1L);
+        transacao.setConta(conta);
+        transacao.setTipo(TransactionType.DEPOSITO);
+        transacao.setValor(BigDecimal.valueOf(100));
+        transacao.setDescricao("Depósito");
+        transacao.setData(LocalDateTime.now());
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.of(conta));
+
+        when(transacaoRepository.findByContaId(1L))
+                .thenReturn(List.of(transacao));
+
+        List<TransacaoResponseDTO> resultado =
+                contaService.extrato(1L);
+
+        assertNotNull(resultado);
+
+        assertEquals(
+                1,
+                resultado.size()
+        );
+
+        assertEquals(
+                TransactionType.DEPOSITO,
+                resultado.getFirst().getTipo()
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoContaNaoExistirAoConsultarExtrato() {
+
+        when(contaRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                ContaNaoEncontradaException.class,
+                () -> contaService.extrato(1L)
         );
     }
 }
