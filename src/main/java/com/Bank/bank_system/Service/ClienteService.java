@@ -7,8 +7,12 @@ import com.Bank.bank_system.Exception.ClienteNaoEncontradoException;
 import com.Bank.bank_system.Repository.ClienteRepository;
 import com.Bank.bank_system.dto.ClienteDTO;
 import com.Bank.bank_system.dto.ClienteResponseDTO;
+import com.Bank.bank_system.security.CurrentUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -16,6 +20,7 @@ import java.util.List;
 public class ClienteService {
 
     private final ClienteRepository clienteRepository;
+    private final CurrentUser currentUser;
 
     //Auxiliar
     private Cliente buscarClienteEntity(Long id) {
@@ -26,14 +31,38 @@ public class ClienteService {
 
     private ClienteResponseDTO toDTO(Cliente cliente) {
         return new ClienteResponseDTO(
+                cliente.getId(),
                 cliente.getNome(),
                 cliente.getEmail(),
                 cliente.getCelular()
         );
     }
 
-    public ClienteService(ClienteRepository clienteRepository) {
+    public ClienteService(ClienteRepository clienteRepository, CurrentUser currentUser) {
         this.clienteRepository = clienteRepository;
+        this.currentUser = currentUser;
+    }
+
+    /** Perfil do próprio usuário logado (modelo 1:1). */
+    public ClienteResponseDTO meuPerfil() {
+        Long clienteId = currentUser.clienteId();
+        if (clienteId == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Seu login não possui perfil de cliente");
+        }
+        return toDTO(buscarClienteEntity(clienteId));
+    }
+
+    public Page<ClienteResponseDTO> listarClientesPaginado(Pageable pageable) {
+        return clienteRepository.findAll(pageable).map(this::toDTO);
+    }
+
+    /** Atualiza o perfil do próprio usuário logado. */
+    public ClienteResponseDTO alterarMeuPerfil(ClienteResponseDTO dto) {
+        Long clienteId = currentUser.clienteId();
+        if (clienteId == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Seu login não possui perfil de cliente");
+        }
+        return alterarCliente(clienteId, dto);
     }
 
     public Cliente criarCliente(ClienteDTO clienteRequest) {
