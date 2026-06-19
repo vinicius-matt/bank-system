@@ -23,13 +23,13 @@ public class ContaController {
     }
 
     @PostMapping("/{id}/depositar")
-    public ContaResponseDTO depositar(@PathVariable Long id, BigDecimal valor){
-        return contaService.depositar(id, valor);
+    public ContaResponseDTO depositar(@PathVariable Long id, @RequestBody ValorDTO dto){
+        return contaService.depositar(id, dto.getValor());
     }
 
     @PostMapping("/{id}/sacar")
-    public ContaResponseDTO sacar(@PathVariable Long id, BigDecimal valor){
-       return contaService.sacar(id, valor);
+    public ContaResponseDTO sacar(@PathVariable Long id, @RequestBody ValorDTO dto){
+        return contaService.sacar(id, dto.getValor());
     }
 
     @PostMapping("/transferir")
@@ -73,8 +73,8 @@ public class ContaController {
     }
 
     @PutMapping("/{id}/alterarLimite")
-        public ContaResponseDTO aumentarlimite(@PathVariable Long id, BigDecimal valor){
-       return contaService.aumentarlimite(id, valor);
+    public ContaResponseDTO aumentarlimite(@PathVariable Long id, @RequestBody ValorDTO dto){
+        return contaService.aumentarlimite(id, dto.getValor());
     }
 
 }
