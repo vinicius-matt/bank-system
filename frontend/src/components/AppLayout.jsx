@@ -17,6 +17,8 @@ const TITLES = {
   '/': { h: 'Visão geral', s: 'Resumo da sua operação bancária' },
   '/contas': { h: 'Contas', s: 'Gerencie todas as contas' },
   '/transferir': { h: 'Transferir', s: 'Envie dinheiro entre contas' },
+  '/pix': { h: 'Pix', s: 'Chaves e transferências instantâneas' },
+  '/perfil': { h: 'Meu perfil', s: 'Seus dados de cadastro' },
   '/clientes': { h: 'Clientes', s: 'Cadastro e gestão de clientes' },
 }
 
@@ -54,13 +56,23 @@ export default function AppLayout() {
         ))}
 
         <div className="sidebar-foot">
-          <div className="user-chip">
-            <span className="avatar">{initials(user?.nome || user?.email)}</span>
-            <div className="meta">
-              <div className="nm">{user?.nome || 'Usuário'}</div>
-              <div className="em">{user?.email}</div>
+          {isAdmin ? (
+            <div className="user-chip">
+              <span className="avatar">{initials(user?.nome || user?.email)}</span>
+              <div className="meta">
+                <div className="nm">{user?.nome || 'Usuário'}</div>
+                <div className="em">{user?.email}</div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <button className="user-chip user-chip-btn" onClick={() => { setOpen(false); navigate('/perfil') }} title="Meu perfil">
+              <span className="avatar">{initials(user?.nome || user?.email)}</span>
+              <div className="meta">
+                <div className="nm">{user?.nome || 'Usuário'}</div>
+                <div className="em">{user?.email}</div>
+              </div>
+            </button>
+          )}
           <button className="nav-item" onClick={doLogout} style={{ width: '100%', marginTop: 4 }}>
             <Icon.Logout width={19} /> Sair
           </button>
@@ -81,9 +93,15 @@ export default function AppLayout() {
             </div>
           </div>
           <div className="topbar-actions">
-            <span className="badge badge-green dot hide-mobile"><Icon.Shield width={13} /> Sessão JWT</span>
             <NotificationBell />
-            <span className="avatar hide-mobile" title={user?.email}>{initials(user?.nome || user?.email)}</span>
+            {isAdmin ? (
+              <span className="avatar hide-mobile" title={user?.email}>{initials(user?.nome || user?.email)}</span>
+            ) : (
+              <button className="avatar avatar-btn" title="Meu perfil" aria-label="Meu perfil"
+                onClick={() => navigate('/perfil')}>
+                {initials(user?.nome || user?.email)}
+              </button>
+            )}
           </div>
         </header>
 

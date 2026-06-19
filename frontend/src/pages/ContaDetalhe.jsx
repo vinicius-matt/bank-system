@@ -7,6 +7,7 @@ import { currency, dateTime, maskAccount } from '../utils/format'
 import { StatusBadge, TipoBadge, EmptyState, txMeta } from '../components/Common'
 import Loader from '../components/Loader'
 import Modal from '../components/Modal'
+import MoneyInput from '../components/MoneyInput'
 import Icon from '../components/Icons'
 
 export default function ContaDetalhe() {
@@ -181,14 +182,14 @@ export default function ContaDetalhe() {
 
 function ValorModal({ open, onClose, title, subtitle, cta, onSubmit, defaultValue }) {
   const toast = useToast()
-  const [valor, setValor] = useState('')
+  const [valor, setValor] = useState(0)
   const [saving, setSaving] = useState(false)
 
-  useEffect(() => { if (open) setValor(defaultValue != null ? String(defaultValue) : '') }, [open, defaultValue])
+  useEffect(() => { if (open) setValor(defaultValue != null ? Number(defaultValue) : 0) }, [open, defaultValue])
 
   const submit = async (e) => {
     e.preventDefault()
-    const v = Number(String(valor).replace(',', '.'))
+    const v = Number(valor)
     if (!(v >= 0) || (title !== 'Ajustar limite' && v <= 0)) { toast.error('Informe um valor válido.'); return }
     setSaving(true)
     try { await onSubmit(v) } finally { setSaving(false) }
@@ -197,11 +198,7 @@ function ValorModal({ open, onClose, title, subtitle, cta, onSubmit, defaultValu
   return (
     <Modal open={open} onClose={onClose} title={title} subtitle={subtitle}>
       <form className="auth-form" onSubmit={submit}>
-        <div className="input-prefix">
-          <span style={{ fontSize: '1.1rem' }}>R$</span>
-          <input className="input amount-input" type="text" inputMode="decimal" placeholder="0,00" autoFocus
-            value={valor} onChange={(e) => setValor(e.target.value)} style={{ paddingLeft: 52 }} />
-        </div>
+        <MoneyInput value={valor} onChange={setValor} autoFocus className="input amount-input" />
         <button className="btn btn-primary btn-block" type="submit" disabled={saving}>
           {saving ? <Loader small /> : cta}
         </button>

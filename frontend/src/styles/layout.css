@@ -32,6 +32,10 @@
 .user-chip .meta { min-width: 0; }
 .user-chip .meta .nm { font-weight: 600; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .user-chip .meta .em { font-size: .76rem; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-chip-btn { width: 100%; text-align: left; background: none; border: none; cursor: pointer; border-radius: 12px; transition: background .15s; }
+.user-chip-btn:hover { background: var(--surface); }
+.avatar-btn { border: none; cursor: pointer; transition: transform .12s, box-shadow .2s; }
+.avatar-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px -8px rgba(124, 92, 255, .9); }
 
 /* ---------------- Main ---------------- */
 .main { display: flex; flex-direction: column; min-width: 0; }

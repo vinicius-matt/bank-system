@@ -6,6 +6,7 @@ import { currency, maskAccount } from '../utils/format'
 import { EmptyState } from '../components/Common'
 import Loader from '../components/Loader'
 import Modal from '../components/Modal'
+import MoneyInput from '../components/MoneyInput'
 import Icon from '../components/Icons'
 
 const TIPOS = [
@@ -67,11 +68,11 @@ function TransferirPix({ contas, onDone }) {
   const toast = useToast()
   const [origemId, setOrigemId] = useState(contas[0] ? String(contas[0].id) : '')
   const [chave, setChave] = useState('')
-  const [valor, setValor] = useState('')
+  const [valor, setValor] = useState(0)
   const [mensagem, setMensagem] = useState('')
   const [sending, setSending] = useState(false)
 
-  const v = Number(String(valor).replace(',', '.'))
+  const v = Number(valor)
 
   const submit = async (e) => {
     e.preventDefault()
@@ -82,7 +83,7 @@ function TransferirPix({ contas, onDone }) {
     try {
       const r = await pixApi.transferir({ origemId: Number(origemId), chaveDestino: chave.trim(), valor: v, mensagem })
       toast.success(`Pix de ${currency(r.valor)} enviado!`)
-      setChave(''); setValor(''); setMensagem('')
+      setChave(''); setValor(0); setMensagem('')
       onDone()
     } catch (err) {
       toast.error(apiError(err, 'Não foi possível concluir o Pix.'))
@@ -116,11 +117,7 @@ function TransferirPix({ contas, onDone }) {
 
       <div className="field">
         <label>Valor</label>
-        <div className="input-prefix">
-          <span>R$</span>
-          <input className="input" inputMode="decimal" placeholder="0,00"
-            value={valor} onChange={(e) => setValor(e.target.value)} required />
-        </div>
+        <MoneyInput value={valor} onChange={setValor} />
       </div>
 
       <div className="field">

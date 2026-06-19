@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext'
 import { currency, maskAccount } from '../utils/format'
 import { StatusBadge } from '../components/Common'
 import Loader from '../components/Loader'
+import MoneyInput from '../components/MoneyInput'
 import Icon from '../components/Icons'
 
 export default function Transferir() {
@@ -17,7 +18,7 @@ export default function Transferir() {
   const [loading, setLoading] = useState(true)
   const [origemId, setOrigemId] = useState(location.state?.origemId ? String(location.state.origemId) : '')
   const [destinoId, setDestinoId] = useState('')
-  const [valor, setValor] = useState('')
+  const [valor, setValor] = useState(0)
   const [mensagem, setMensagem] = useState('')
   const [sending, setSending] = useState(false)
 
@@ -29,7 +30,7 @@ export default function Transferir() {
   }, []) // eslint-disable-line
 
   const origem = contas.find((c) => String(c.id) === String(origemId))
-  const v = Number(String(valor).replace(',', '.'))
+  const v = Number(valor)
   const saldoDisponivel = origem ? Number(origem.saldo) + Number(origem.limite || 0) : 0
 
   const submit = async (e) => {
@@ -113,11 +114,7 @@ export default function Transferir() {
 
           <div className="field">
             <label>Valor</label>
-            <div className="input-prefix">
-              <span>R$</span>
-              <input className="input" type="text" inputMode="decimal" placeholder="0,00"
-                value={valor} onChange={(e) => setValor(e.target.value)} required />
-            </div>
+            <MoneyInput value={valor} onChange={setValor} />
           </div>
 
           <div className="field">

@@ -9,6 +9,7 @@ import ContaDetalhe from './pages/ContaDetalhe'
 import Clientes from './pages/Clientes'
 import Transferir from './pages/Transferir'
 import Pix from './pages/Pix'
+import Perfil from './pages/Perfil'
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/clientes" element={<Clientes />} />
         <Route path="/transferir" element={<Transferir />} />
         <Route path="/pix" element={<Pix />} />
+        <Route path="/perfil" element={<Perfil />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

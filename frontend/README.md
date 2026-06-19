@@ -37,8 +37,13 @@ Na primeira execução o backend cria um usuário admin automaticamente
 (`DataSeeder`):
 
 ```
-email: admin@bank.com
-senha: admin123
+Cliente comum (com perfil de titular):
+  email: user@bank.com
+  senha: user123
+
+Administrador (operador, sem perfil de titular):
+  email: admin@bank.com
+  senha: admin123
 ```
 
 Você também pode criar uma conta nova pela tela **Criar conta**.

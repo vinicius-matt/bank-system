@@ -64,7 +64,9 @@ export default function Login() {
           </form>
 
           <div className="demo-hint">
-            Conta de demonstração: <b>admin@bank.com</b> · senha <b>admin123</b>
+            Contas de demonstração:<br />
+            Cliente: <b>user@bank.com</b> · <b>user123</b><br />
+            Admin: <b>admin@bank.com</b> · <b>admin123</b>
           </div>
 
           <p className="auth-switch">
