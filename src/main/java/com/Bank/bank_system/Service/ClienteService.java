@@ -34,7 +34,8 @@ public class ClienteService {
                 cliente.getId(),
                 cliente.getNome(),
                 cliente.getEmail(),
-                cliente.getCelular()
+                cliente.getCelular(),
+                cliente.getCpf()
         );
     }
 

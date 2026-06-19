@@ -15,4 +15,5 @@ public class ClienteResponseDTO {
     private String nome;
     private String email;
     private String celular;
+    private String cpf;
 }
