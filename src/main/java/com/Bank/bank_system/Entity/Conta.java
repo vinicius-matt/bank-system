@@ -36,4 +36,8 @@ public class Conta {
 
     @Enumerated(EnumType.STRING)
     private StatusConta status;
+
+    /** Controle de concorrência otimista: evita corromper o saldo em operações simultâneas. */
+    @Version
+    private Long version;
 }

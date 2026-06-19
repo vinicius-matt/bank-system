@@ -15,6 +15,8 @@ import com.Bank.bank_system.dto.TransacaoResponseDTO;
 import com.Bank.bank_system.model.StatusConta;
 import com.Bank.bank_system.model.TipoConta;
 import com.Bank.bank_system.model.TransactionType;
+import com.Bank.bank_system.security.CurrentUser;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,8 +45,23 @@ class ContaServiceTest {
     @Mock
     private TransacaoRepository transacaoRepository;
 
+    @Mock
+    private com.Bank.bank_system.Repository.ChavePixRepository chavePixRepository;
+
+    @Mock
+    private NotificacaoService notificacaoService;
+
+    @Mock
+    private CurrentUser currentUser;
+
     @InjectMocks
     private ContaService contaService;
+
+    @BeforeEach
+    void setUp() {
+        // Tratamos os testes como ADMIN: a checagem de dono (validarAcesso) é ignorada.
+        lenient().when(currentUser.isAdmin()).thenReturn(true);
+    }
 
     //auxiliar
     private Conta criarContaPadrao() {
@@ -739,7 +756,7 @@ class ContaServiceTest {
         when(contaRepository.findById(1L))
                 .thenReturn(Optional.of(conta));
 
-        when(transacaoRepository.findByContaId(1L))
+        when(transacaoRepository.findByContaIdOrderByDataDesc(1L))
                 .thenReturn(List.of(transacao));
 
         List<TransacaoResponseDTO> resultado =

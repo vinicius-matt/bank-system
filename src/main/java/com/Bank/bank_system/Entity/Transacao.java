@@ -12,6 +12,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+// Observação: o campo redundante "criadoEm" foi removido; usamos apenas "data"
+// (preenchida na criação) como instante oficial da transação.
+
 @Entity
 @Getter
 @Setter
@@ -27,13 +30,11 @@ public class Transacao {
     @Enumerated(EnumType.STRING)
     private TransactionType tipo;
 
-    @CreationTimestamp
-    private LocalDateTime criadoEm;
-
     private BigDecimal valor;
 
     private String descricao;
 
+    @CreationTimestamp
     private LocalDateTime data;
 
     @ManyToOne(fetch = FetchType.LAZY)
