@@ -26,6 +26,8 @@ export const clienteApi = {
 // ---------- Contas ----------
 export const contaApi = {
   listar: (params = { size: 100 }) => api.get('/conta/listar', { params }).then((r) => unwrap(r.data)),
+  resumo: () => api.get('/conta/resumo').then((r) => r.data),
+  indisponiveis: () => api.get('/conta/indisponiveis').then((r) => r.data),
   buscar: (id) => api.get(`/conta/${id}`).then((r) => r.data),
   criar: (payload) => api.post('/conta/criar', payload).then((r) => r.data),
   saldo: (id) => api.get(`/conta/${id}/saldo`).then((r) => r.data),

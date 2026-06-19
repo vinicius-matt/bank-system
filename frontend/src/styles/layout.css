@@ -182,6 +182,18 @@
 .kv .k { color: var(--text-dim); }
 .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
+/* ---------------- Aviso (notice) ---------------- */
+.notice {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 14px 16px; border-radius: var(--radius);
+  background: var(--amber-soft); border: 1px solid rgba(255, 181, 71, 0.28);
+  color: var(--text); font-size: .92rem;
+}
+.notice-ic {
+  width: 34px; height: 34px; border-radius: 10px; flex: none; display: grid; place-items: center;
+  background: rgba(255, 181, 71, 0.18); color: var(--amber);
+}
+
 /* ---------------- Notificações ---------------- */
 .notif { position: relative; }
 .notif-badge {

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { contaApi } from '../api/services'
 import { apiError } from '../api/client'
+import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { currency, maskAccount } from '../utils/format'
 import { StatusBadge, TipoBadge, EmptyState } from '../components/Common'
@@ -12,16 +13,25 @@ import Icon from '../components/Icons'
 export default function Contas() {
   const navigate = useNavigate()
   const toast = useToast()
+  const { isAdmin } = useAuth()
   const [contas, setContas] = useState([])
+  const [indisponiveis, setIndisponiveis] = useState([])
   const [loading, setLoading] = useState(true)
   const [q, setQ] = useState('')
   const [filter, setFilter] = useState('TODAS')
   const [openCreate, setOpenCreate] = useState(false)
 
   const load = async () => {
-    try { setContas(await contaApi.listar()) }
-    catch (err) { toast.error(apiError(err, 'Falha ao carregar contas.')) }
-    finally { setLoading(false) }
+    try {
+      const [cs, ind] = await Promise.all([
+        contaApi.listar(),
+        isAdmin ? Promise.resolve([]) : contaApi.indisponiveis().catch(() => []),
+      ])
+      setContas(cs)
+      setIndisponiveis(ind)
+    } catch (err) {
+      toast.error(apiError(err, 'Falha ao carregar contas.'))
+    } finally { setLoading(false) }
   }
   useEffect(() => { load() }, []) // eslint-disable-line
 
@@ -51,13 +61,48 @@ export default function Contas() {
         </div>
       </div>
 
-      <div className="segmented" style={{ marginBottom: 20 }}>
-        {['TODAS', 'ATIVA', 'BLOQUEADA', 'INATIVA'].map((f) => (
-          <button key={f} className={filter === f ? 'on' : ''} onClick={() => setFilter(f)}>
-            {f === 'TODAS' ? 'Todas' : f === 'ATIVA' ? 'Ativas' : f === 'BLOQUEADA' ? 'Bloqueadas' : 'Encerradas'}
-          </button>
-        ))}
-      </div>
+      {/* Filtros por status: apenas para ADMIN (usuário comum só vê ativas) */}
+      {isAdmin && (
+        <div className="segmented" style={{ marginBottom: 20 }}>
+          {['TODAS', 'ATIVA', 'BLOQUEADA', 'INATIVA'].map((f) => (
+            <button key={f} className={filter === f ? 'on' : ''} onClick={() => setFilter(f)}>
+              {f === 'TODAS' ? 'Todas' : f === 'ATIVA' ? 'Ativas' : f === 'BLOQUEADA' ? 'Bloqueadas' : 'Encerradas'}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Aviso para usuário comum: contas indisponíveis (bloqueadas/encerradas) */}
+      {!isAdmin && indisponiveis.length > 0 && (
+        <div className="notice" style={{ marginBottom: 20, flexDirection: 'column', alignItems: 'stretch' }}>
+          <div className="row gap-12" style={{ marginBottom: 4 }}>
+            <span className="notice-ic"><Icon.Lock width={18} /></span>
+            <div>
+              <div style={{ fontWeight: 600 }}>
+                {indisponiveis.length} conta{indisponiveis.length > 1 ? 's' : ''} indisponíve{indisponiveis.length > 1 ? 'is' : 'l'}
+              </div>
+              <div className="faint" style={{ fontSize: '.82rem' }}>
+                Contas bloqueadas ou encerradas são geridas pelo banco. Para reativar, fale com o suporte.
+              </div>
+            </div>
+          </div>
+          <div className="list" style={{ marginTop: 6 }}>
+            {indisponiveis.map((c) => (
+              <div className="tx" key={c.id}>
+                <div className="ic neutral"><Icon.Card width={18} /></div>
+                <div className="info">
+                  <div className="t row gap-8 mono">Nº {c.numero} <TipoBadge tipo={c.tipo} /></div>
+                  <div className="d row gap-8">
+                    <StatusBadge status={c.status} />
+                    <span className="faint">{c.status === 'BLOQUEADA' ? 'Sua conta está bloqueada' : 'Sua conta está encerrada'}</span>
+                  </div>
+                </div>
+                <div className="amt mono">{currency(c.saldo)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {filtered.length === 0 ? (
         <div className="card"><EmptyState title="Nenhuma conta encontrada"

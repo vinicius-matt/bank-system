@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,11 +47,13 @@ public class ContaController {
     }
 
     @PutMapping("/{id}/Bloquear")
+    @PreAuthorize("hasRole('ADMIN')")
     public ContaResponseDTO bloquear(@PathVariable Long id) {
         return contaService.bloquearConta(id);
     }
 
     @PutMapping("/{id}/Ativar")
+    @PreAuthorize("hasRole('ADMIN')")
     public ContaResponseDTO ativar(@PathVariable Long id) {
         return contaService.ativarConta(id);
     }
@@ -58,6 +61,16 @@ public class ContaController {
     @GetMapping("/listar")
     public Page<ContaResponseDTO> listarContas(Pageable pageable) {
         return contaService.listarContas(pageable);
+    }
+
+    @GetMapping("/resumo")
+    public ResumoContasDTO resumo() {
+        return contaService.resumoStatus();
+    }
+
+    @GetMapping("/indisponiveis")
+    public List<ContaResponseDTO> indisponiveis() {
+        return contaService.listarIndisponiveis();
     }
 
     @GetMapping("/{id}")
@@ -94,6 +107,7 @@ public class ContaController {
     }
 
     @PutMapping("/{id}/encerrar")
+    @PreAuthorize("hasRole('ADMIN')")
     public ContaResponseDTO encerrarConta(@PathVariable Long id) {
         return contaService.encerrarConta(id);
     }

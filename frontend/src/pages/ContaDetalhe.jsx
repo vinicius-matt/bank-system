@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { contaApi, baixarBlob } from '../api/services'
 import { apiError } from '../api/client'
+import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { currency, dateTime, maskAccount } from '../utils/format'
 import { StatusBadge, TipoBadge, EmptyState, txMeta } from '../components/Common'
@@ -14,6 +15,7 @@ export default function ContaDetalhe() {
   const { id } = useParams()
   const navigate = useNavigate()
   const toast = useToast()
+  const { isAdmin } = useAuth()
 
   const [conta, setConta] = useState(null)
   const [extrato, setExtrato] = useState([])
@@ -100,21 +102,24 @@ export default function ContaDetalhe() {
               </button>
             </div>
 
-            <div className="action-grid" style={{ marginTop: 10 }}>
-              {bloqueada ? (
-                <button className="btn btn-ghost" disabled={busy || encerrada} onClick={() => act(() => contaApi.ativar(conta.id), 'Conta ativada.')}>
-                  <Icon.Unlock width={17} /> Ativar
+            {/* Operações de status (bloquear/ativar/encerrar): somente ADMIN */}
+            {isAdmin && (
+              <div className="action-grid" style={{ marginTop: 10 }}>
+                {bloqueada ? (
+                  <button className="btn btn-ghost" disabled={busy || encerrada} onClick={() => act(() => contaApi.ativar(conta.id), 'Conta ativada.')}>
+                    <Icon.Unlock width={17} /> Ativar
+                  </button>
+                ) : (
+                  <button className="btn btn-ghost" disabled={busy || encerrada} onClick={() => act(() => contaApi.bloquear(conta.id), 'Conta bloqueada.')}>
+                    <Icon.Lock width={17} /> Bloquear
+                  </button>
+                )}
+                <button className="btn btn-danger" disabled={busy || encerrada}
+                  onClick={() => { if (window.confirm('Encerrar esta conta? A ação é definitiva.')) act(() => contaApi.encerrar(conta.id), 'Conta encerrada.') }}>
+                  <Icon.Power width={17} /> Encerrar
                 </button>
-              ) : (
-                <button className="btn btn-ghost" disabled={busy || encerrada} onClick={() => act(() => contaApi.bloquear(conta.id), 'Conta bloqueada.')}>
-                  <Icon.Lock width={17} /> Bloquear
-                </button>
-              )}
-              <button className="btn btn-danger" disabled={busy || encerrada}
-                onClick={() => { if (window.confirm('Encerrar esta conta? A ação é definitiva.')) act(() => contaApi.encerrar(conta.id), 'Conta encerrada.') }}>
-                <Icon.Power width={17} /> Encerrar
-              </button>
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Dados */}
