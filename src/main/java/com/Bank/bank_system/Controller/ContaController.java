@@ -1,14 +1,10 @@
 package com.Bank.bank_system.Controller;
 
 import com.Bank.bank_system.Service.ContaService;
-import com.Bank.bank_system.Service.ExtratoExportService;
 import com.Bank.bank_system.dto.*;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,11 +15,9 @@ import java.util.List;
 public class ContaController {
 
     private final ContaService contaService;
-    private final ExtratoExportService exportService;
 
-    public ContaController(ContaService contaService, ExtratoExportService exportService) {
+    public ContaController(ContaService contaService) {
         this.contaService = contaService;
-        this.exportService = exportService;
     }
 
     @PostMapping("/criar")
@@ -76,29 +70,6 @@ public class ContaController {
     @GetMapping("/{id}")
     public ContaResponseDTO listar(@PathVariable Long id) {
         return contaService.buscarConta(id);
-    }
-
-    @GetMapping("/{id}/extrato")
-    public List<TransacaoResponseDTO> extrato(@PathVariable Long id) {
-        return contaService.extrato(id);
-    }
-
-    @GetMapping("/{id}/extrato/csv")
-    public ResponseEntity<byte[]> extratoCsv(@PathVariable Long id) {
-        byte[] body = exportService.gerarCsv(id);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"extrato-" + id + ".csv\"")
-                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
-                .body(body);
-    }
-
-    @GetMapping("/{id}/extrato/pdf")
-    public ResponseEntity<byte[]> extratoPdf(@PathVariable Long id) {
-        byte[] body = exportService.gerarPdf(id);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"extrato-" + id + ".pdf\"")
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(body);
     }
 
     @GetMapping("/{id}/saldo")
