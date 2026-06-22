@@ -13,16 +13,11 @@
 
 ## 📸 Telas
 
-> Adicione aqui prints da aplicação (coloque as imagens em `docs/screenshots/`).
+ Login 
+<!-- ![Login](docs/screenshots/login.png) --> <img width="1916" height="916" alt="Nimbus bank" src="https://github.com/user-attachments/assets/507409f4-2ee8-4754-a5da-4ffb1734012f" /> 
 
-| Login | Dashboard |
-|-------|-----------|
-| <!-- ![Login](docs/screenshots/login.png) --> _print aqui_ | <!-- ![Dashboard](docs/screenshots/dashboard.png) --> _print aqui_ |
-
-| Detalhe da conta / Extrato | Pix |
-|----------------------------|-----|
-| <!-- ![Conta](docs/screenshots/conta.png) --> _print aqui_ | <!-- ![Pix](docs/screenshots/pix.png) --> _print aqui_ |
-
+Dashboard
+<!-- --> <img width="1912" height="916" alt="dash" src="https://github.com/user-attachments/assets/ebc08189-49e3-4bdd-ad1c-559ffb2c5592" />
 ---
 
 ## ✨ Funcionalidades
@@ -53,7 +48,7 @@
 
 **Back-end:** Java 21 · Spring Boot 4 · Spring Security · Spring Data JPA (Hibernate) · PostgreSQL · JWT (jjwt) · OpenPDF · Lombok · springdoc-openapi · JUnit 5 + Mockito
 
-**Front-end:** React 18 · Vite · React Router · Axios · Recharts · CSS próprio (tema dark de banco digital)
+**Front-end:** React 18 · Vite · React Router · Axios · Recharts · CSS próprio
 
 ---
 
