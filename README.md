@@ -123,7 +123,7 @@ Documentação da API: `http://localhost:8080/swagger-ui.html`
 
 ---
 
-## ☁️ Deploy
+## Deploy
 
 Porta, CORS, segredo do JWT e banco são controlados por **variáveis de ambiente**:
 
@@ -152,6 +152,6 @@ O repositório inclui `Dockerfile`, `docker-compose.yml` e `render.yaml` prontos
 
 ---
 
-## 👤 Autor
+## Autor
 
 **Matheus Vinícius** — projeto de estudo de Java, Spring Boot, segurança e front-end.
