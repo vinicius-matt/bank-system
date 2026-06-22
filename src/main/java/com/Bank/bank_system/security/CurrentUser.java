@@ -2,16 +2,11 @@ package com.Bank.bank_system.security;
 
 import com.Bank.bank_system.Entity.Usuario;
 import com.Bank.bank_system.model.Role;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
 
-/**
- * Acesso utilitário ao usuário autenticado a partir do SecurityContext.
- * Centraliza as checagens de papel (ADMIN) e de propriedade (dono).
- */
 @Component
 public class CurrentUser {
 

@@ -14,15 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Profile("!test")
 public class DataSeeder {
 
-    /**
-     * Cria contas padrão na primeira execução, para autenticar imediatamente:
-     *
-     *  - ADMIN (operador, sem perfil de titular)
-     *      email: admin@bank.com   senha: admin123
-     *
-     *  - USER comum (já com perfil de cliente vinculado, modelo 1:1)
-     *      email: user@bank.com    senha: user123
-     */
     @Bean
     CommandLineRunner seedUsuarios(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         return args -> {
@@ -34,11 +25,10 @@ public class DataSeeder {
                         .role(Role.ADMIN)
                         .build();
                 usuarioRepository.save(admin);
-                System.out.println(">> Usuário admin padrão criado: admin@bank.com / admin123");
+                System.out.println(">> Usuario admin padrao criado: admin@bank.com / admin123");
             }
 
             if (!usuarioRepository.existsByEmail("user@bank.com")) {
-                // Perfil de titular vinculado (cascade ALL persiste o Cliente junto)
                 Cliente cliente = new Cliente();
                 cliente.setNome("Cliente Demonstração");
                 cliente.setCpf("00000000000");
@@ -53,7 +43,7 @@ public class DataSeeder {
                         .cliente(cliente)
                         .build();
                 usuarioRepository.save(user);
-                System.out.println(">> Usuário comum padrão criado: user@bank.com / user123 (com perfil)");
+                System.out.println(">> Usuario comum padrao criado: user@bank.com / user123 (com perfil)");
             }
         };
     }

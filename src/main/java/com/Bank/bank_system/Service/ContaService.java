@@ -13,7 +13,6 @@ import com.Bank.bank_system.dto.ContaDTO;
 import com.Bank.bank_system.dto.ContaResponseDTO;
 import com.Bank.bank_system.dto.ResumoContasDTO;
 import com.Bank.bank_system.dto.SaldoResponseDTO;
-import com.Bank.bank_system.dto.TransacaoResponseDTO;
 import com.Bank.bank_system.dto.TransferenciaResponseDTO;
 import com.Bank.bank_system.model.StatusConta;
 import com.Bank.bank_system.model.TipoNotificacao;
@@ -55,9 +54,6 @@ public class ContaService {
         this.currentUser = currentUser;
     }
 
-    // ===================== Autorização (dono / admin) =====================
-
-    /** Garante que o usuário logado é dono da conta — ou é ADMIN. */
     private void validarAcesso(Conta conta) {
         if (currentUser.isAdmin()) return;
         Long meuClienteId = currentUser.clienteId();
@@ -67,7 +63,6 @@ public class ContaService {
         }
     }
 
-    /** Resolve o cliente dono de uma nova conta: o próprio usuário, ou (ADMIN) o id informado. */
     private Cliente resolverClienteDestino(ContaDTO dto) {
         Long clienteId;
         if (currentUser.isAdmin() && dto.getClienteId() != null) {
@@ -82,8 +77,6 @@ public class ContaService {
         return clienteRepository.findById(clienteId)
                 .orElseThrow(() -> new ClienteNaoEncontradoException("Cliente não encontrado"));
     }
-
-    // ===================== Helpers =====================
 
     private ContaResponseDTO salvarEConverter(Conta conta) {
         return toDTO(contaRepository.save(conta));
@@ -100,16 +93,6 @@ public class ContaService {
         if (saldoDisponivel.compareTo(valor) < 0) {
             throw new SaldoInsuficienteException("Saldo + limite insuficientes");
         }
-    }
-
-    private TransacaoResponseDTO toDTO(Transacao transacao) {
-        return new TransacaoResponseDTO(
-                transacao.getId(),
-                transacao.getTipo(),
-                transacao.getValor(),
-                transacao.getDescricao(),
-                transacao.getData()
-        );
     }
 
     private ContaResponseDTO toDTO(Conta conta) {
@@ -154,19 +137,11 @@ public class ContaService {
         }
     }
 
-    // Usado pelo serviço de exportação de extrato (com checagem de acesso)
     public Conta obterContaComAcesso(Long id) {
         Conta conta = buscarContaEntity(id);
         validarAcesso(conta);
         return conta;
     }
-
-    public List<Transacao> transacoesDaConta(Long id) {
-        Conta conta = obterContaComAcesso(id);
-        return transacaoRepository.findByContaIdOrderByDataDesc(conta.getId());
-    }
-
-    // ===================== Operações =====================
 
     @Transactional
     public ContaResponseDTO criarConta(ContaDTO contaDTO) {
@@ -214,7 +189,6 @@ public class ContaService {
         return dto;
     }
 
-    /** Sobrecarga sem mensagem (compatibilidade). */
     @Transactional
     public TransferenciaResponseDTO transferir(Long contaOrigemId, Long contaDestinoId, BigDecimal valor) {
         return transferir(contaOrigemId, contaDestinoId, valor, null);
@@ -230,7 +204,6 @@ public class ContaService {
         }
         Conta origem = buscarContaEntity(contaOrigemId);
         Conta destino = buscarContaEntity(contaDestinoId);
-        // Só preciso ser dono da conta de ORIGEM (posso transferir para qualquer destino)
         validarAcesso(origem);
         return executarTransferencia(origem, destino, valor, mensagem, TransactionType.TRANSFERENCIA, "Transferência");
     }
@@ -297,16 +270,6 @@ public class ContaService {
         return "R$ " + (v == null ? "0,00" : v.toString());
     }
 
-    @Transactional(readOnly = true)
-    public List<TransacaoResponseDTO> extrato(Long contaId) {
-        Conta conta = buscarContaEntity(contaId);
-        validarAcesso(conta);
-        return transacaoRepository.findByContaIdOrderByDataDesc(contaId)
-                .stream()
-                .map(this::toDTO)
-                .toList();
-    }
-
     @Transactional
     public ContaResponseDTO bloquearConta(Long contaId) {
         Conta conta = buscarContaEntity(contaId);
@@ -341,17 +304,13 @@ public class ContaService {
     public Page<ContaResponseDTO> listarContas(Pageable pageable) {
         Page<Conta> page;
         if (currentUser.isAdmin()) {
-            // Admin enxerga todas as contas, em qualquer status
             page = contaRepository.findAll(pageable);
         } else {
-            // Usuário comum vê apenas as próprias contas ATIVAS.
-            // Contas bloqueadas/encerradas ficam ocultas (só admin acessa).
             page = contaRepository.findByClienteIdAndStatus(requireClienteId(), StatusConta.ATIVA, pageable);
         }
         return page.map(this::toDTO);
     }
 
-    /** Lista (resumida) as contas indisponíveis do usuário (bloqueadas/encerradas), para aviso no front. */
     @Transactional(readOnly = true)
     public List<ContaResponseDTO> listarIndisponiveis() {
         if (currentUser.isAdmin()) return List.of();
@@ -361,7 +320,6 @@ public class ContaService {
                 .stream().map(this::toDTO).toList();
     }
 
-    /** Resumo de quantas contas o usuário tem em cada status (para avisos no front). */
     @Transactional(readOnly = true)
     public ResumoContasDTO resumoStatus() {
         List<Conta> contas = currentUser.isAdmin()
@@ -370,10 +328,12 @@ public class ContaService {
 
         long ativas = 0, bloqueadas = 0, encerradas = 0;
         for (Conta c : contas) {
-            switch (c.getStatus()) {
-                case ATIVA -> ativas++;
-                case BLOQUEADA -> bloqueadas++;
-                case INATIVA -> encerradas++;
+            if (c.getStatus() == StatusConta.ATIVA) {
+                ativas++;
+            } else if (c.getStatus() == StatusConta.BLOQUEADA) {
+                bloqueadas++;
+            } else if (c.getStatus() == StatusConta.INATIVA) {
+                encerradas++;
             }
         }
         return new ResumoContasDTO(contas.size(), ativas, bloqueadas, encerradas);
@@ -392,7 +352,6 @@ public class ContaService {
     public ContaResponseDTO buscarConta(Long id) {
         Conta conta = buscarContaEntity(id);
         validarAcesso(conta);
-        // Usuário comum não acessa o detalhe de contas bloqueadas/encerradas — apenas admin.
         if (!currentUser.isAdmin() && conta.getStatus() != StatusConta.ATIVA) {
             String situacao = conta.getStatus() == StatusConta.BLOQUEADA ? "bloqueada" : "encerrada";
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Sua conta está " + situacao + ".");

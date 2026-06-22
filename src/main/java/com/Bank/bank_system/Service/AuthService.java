@@ -59,7 +59,6 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
         }
 
-        // Modelo 1:1 — cada login é um titular (Cliente)
         Cliente cliente = new Cliente();
         cliente.setNome(request.getNome());
         cliente.setCpf(request.getCpf());
@@ -71,7 +70,7 @@ public class AuthService {
                 .email(request.getEmail())
                 .senha(passwordEncoder.encode(request.getSenha()))
                 .role(Role.USER)
-                .cliente(cliente) // cascade ALL persiste o cliente junto
+                .cliente(cliente)
                 .build();
 
         usuarioRepository.save(usuario);

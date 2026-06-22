@@ -1,6 +1,5 @@
 package com.Bank.bank_system.Entity;
 
-
 import com.Bank.bank_system.model.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,9 +11,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-// Observação: o campo redundante "criadoEm" foi removido; usamos apenas "data"
-// (preenchida na criação) como instante oficial da transação.
-
 @Entity
 @Getter
 @Setter
@@ -25,7 +21,6 @@ public class Transacao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
 
     @Enumerated(EnumType.STRING)
     private TransactionType tipo;

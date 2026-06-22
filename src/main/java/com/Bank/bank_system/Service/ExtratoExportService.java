@@ -2,6 +2,7 @@ package com.Bank.bank_system.Service;
 
 import com.Bank.bank_system.Entity.Conta;
 import com.Bank.bank_system.Entity.Transacao;
+import com.Bank.bank_system.Repository.TransacaoRepository;
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
@@ -30,13 +31,15 @@ import java.util.Locale;
 public class ExtratoExportService {
 
     private final ContaService contaService;
+    private final TransacaoRepository transacaoRepository;
 
     private static final Locale BR = Locale.forLanguageTag("pt-BR");
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final Color BRAND = new Color(124, 92, 255);
 
-    public ExtratoExportService(ContaService contaService) {
+    public ExtratoExportService(ContaService contaService, TransacaoRepository transacaoRepository) {
         this.contaService = contaService;
+        this.transacaoRepository = transacaoRepository;
     }
 
     private String moeda(BigDecimal v) {
@@ -47,11 +50,9 @@ public class ExtratoExportService {
         return d == null ? "-" : d.format(DTF);
     }
 
-    // ===================== CSV =====================
-
     public byte[] gerarCsv(Long contaId) {
         Conta conta = contaService.obterContaComAcesso(contaId);
-        List<Transacao> txs = contaService.transacoesDaConta(contaId);
+        List<Transacao> txs = transacaoRepository.findByContaIdOrderByDataDesc(contaId);
 
         StringBuilder sb = new StringBuilder();
         sb.append("Conta;").append(conta.getNumero()).append('\n');
@@ -64,7 +65,6 @@ public class ExtratoExportService {
               .append(t.getDescricao() == null ? "" : t.getDescricao().replace(';', ',')).append(';')
               .append(t.getValor()).append('\n');
         }
-        // BOM para abrir corretamente no Excel com acentos
         byte[] bom = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
         byte[] body = sb.toString().getBytes(StandardCharsets.UTF_8);
         byte[] out = new byte[bom.length + body.length];
@@ -73,11 +73,9 @@ public class ExtratoExportService {
         return out;
     }
 
-    // ===================== PDF =====================
-
     public byte[] gerarPdf(Long contaId) {
         Conta conta = contaService.obterContaComAcesso(contaId);
-        List<Transacao> txs = contaService.transacoesDaConta(contaId);
+        List<Transacao> txs = transacaoRepository.findByContaIdOrderByDataDesc(contaId);
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             Document doc = new Document(PageSize.A4, 40, 40, 48, 40);
@@ -86,7 +84,6 @@ public class ExtratoExportService {
 
             Font titulo = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BRAND);
             Font sub = FontFactory.getFont(FontFactory.HELVETICA, 10, Color.DARK_GRAY);
-            Font label = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, Color.BLACK);
 
             Paragraph header = new Paragraph("Nimbus Bank — Extrato", titulo);
             doc.add(header);

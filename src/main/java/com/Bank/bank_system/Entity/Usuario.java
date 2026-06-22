@@ -38,7 +38,6 @@ public class Usuario implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    /** Perfil de titular vinculado a este login (1:1). Admins podem não ter cliente. */
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;

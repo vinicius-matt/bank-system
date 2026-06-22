@@ -32,7 +32,6 @@ public class ChavePixService {
 
     @Transactional
     public ChavePixResponseDTO criar(ChavePixDTO dto) {
-        // valida existência + propriedade da conta
         Conta conta = contaService.obterContaComAcesso(dto.getContaId());
 
         String valor = normalizarValor(dto.getTipo(), dto.getValor());
@@ -52,7 +51,7 @@ public class ChavePixService {
 
     @Transactional(readOnly = true)
     public List<ChavePixResponseDTO> listarPorConta(Long contaId) {
-        contaService.obterContaComAcesso(contaId); // valida acesso
+        contaService.obterContaComAcesso(contaId);
         return chavePixRepository.findByContaId(contaId).stream().map(this::toDTO).toList();
     }
 
@@ -67,7 +66,6 @@ public class ChavePixService {
     public void excluir(Long id) {
         ChavePix chave = chavePixRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chave Pix não encontrada"));
-        // valida propriedade da conta dona da chave
         contaService.obterContaComAcesso(chave.getConta().getId());
         chavePixRepository.delete(chave);
     }

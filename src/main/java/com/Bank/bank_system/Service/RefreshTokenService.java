@@ -42,7 +42,6 @@ public class RefreshTokenService {
         return rt;
     }
 
-    /** Rotação: revoga o antigo e emite um novo (boa prática de segurança). */
     public RefreshToken rotacionar(RefreshToken atual) {
         atual.setRevoked(true);
         repository.save(atual);

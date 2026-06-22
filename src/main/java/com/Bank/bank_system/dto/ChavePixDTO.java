@@ -15,6 +15,5 @@ public class ChavePixDTO {
     @NotNull(message = "A conta é obrigatória")
     private Long contaId;
 
-    /** Valor da chave. Ignorado quando o tipo é ALEATORIA (gerada pelo sistema). */
     private String valor;
 }

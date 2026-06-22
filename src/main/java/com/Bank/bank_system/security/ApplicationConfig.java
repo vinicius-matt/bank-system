@@ -30,12 +30,6 @@ public class ApplicationConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // O AuthenticationProvider (DaoAuthenticationProvider) é montado
-    // automaticamente pelo Spring Security a partir dos beans
-    // UserDetailsService + PasswordEncoder acima — não é mais necessário
-    // declará-lo manualmente (o construtor sem argumentos foi removido no
-    // Spring Security 7).
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

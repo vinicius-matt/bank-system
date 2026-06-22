@@ -20,8 +20,6 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
-    // ---------- Perfil do próprio usuário (qualquer autenticado) ----------
-
     @GetMapping("/me")
     public ClienteResponseDTO meuPerfil() {
         return clienteService.meuPerfil();
@@ -31,8 +29,6 @@ public class ClienteController {
     public ClienteResponseDTO atualizarMeuPerfil(@Valid @RequestBody ClienteResponseDTO clienteRequest) {
         return clienteService.alterarMeuPerfil(clienteRequest);
     }
-
-    // ---------- Administração (somente ADMIN) ----------
 
     @PostMapping("/criar")
     @PreAuthorize("hasRole('ADMIN')")

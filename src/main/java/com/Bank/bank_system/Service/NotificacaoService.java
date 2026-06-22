@@ -29,8 +29,6 @@ public class NotificacaoService {
         this.currentUser = currentUser;
     }
 
-    // ---------- Criação (chamada por outros serviços) ----------
-
     public void criarParaUsuario(Usuario usuario, String titulo, String mensagem, TipoNotificacao tipo) {
         if (usuario == null) return;
         Notificacao n = Notificacao.builder()
@@ -43,14 +41,11 @@ public class NotificacaoService {
         notificacaoRepository.save(n);
     }
 
-    /** Notifica o usuário dono de um cliente (se houver login associado). */
     public void criarParaCliente(Long clienteId, String titulo, String mensagem, TipoNotificacao tipo) {
         if (clienteId == null) return;
         usuarioRepository.findByClienteId(clienteId)
                 .ifPresent(u -> criarParaUsuario(u, titulo, mensagem, tipo));
     }
-
-    // ---------- Consulta / leitura (usuário logado) ----------
 
     @Transactional(readOnly = true)
     public List<NotificacaoResponseDTO> listar() {

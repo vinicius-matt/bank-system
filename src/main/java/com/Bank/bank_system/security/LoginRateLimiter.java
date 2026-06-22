@@ -9,12 +9,6 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Proteção simples (em memória) contra força bruta no login.
- * Bloqueia por alguns minutos após N tentativas falhas por chave (email/IP).
- *
- * Em produção com múltiplas instâncias, troque por Redis/Bucket4j.
- */
 @Component
 public class LoginRateLimiter {
 
