@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: bank_system
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      # 5433 no host para não conflitar com um PostgreSQL local na 5432.
+      # (a comunicação backend <-> db acontece na rede interna, na 5432)
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: .
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/bank_system
+      DB_USERNAME: postgres
+      DB_PASSWORD: root
+      JWT_SECRET: c2VjcmV0LWtleS1iYW5rLXN5c3RlbS1jaGFuZ2UtdGhpcy1pbi1wcm9kdWN0aW9uLTEyMzQ1Njc4OTA=
+      ALLOWED_ORIGINS: http://localhost:3000
+      PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8080
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

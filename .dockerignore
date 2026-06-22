@@ -1,0 +1,9 @@
+target/
+frontend/
+.git/
+.idea/
+.mvn/
+*.md
+*.pdf
+docs/
+HELP.md
