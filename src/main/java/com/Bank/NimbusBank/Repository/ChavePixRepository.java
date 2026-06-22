@@ -1,6 +1,6 @@
-package com.Bank.bank_system.Repository;
+package com.Bank.NimbusBank.Repository;
 
-import com.Bank.bank_system.Entity.ChavePix;
+import com.Bank.NimbusBank.Entity.ChavePix;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
