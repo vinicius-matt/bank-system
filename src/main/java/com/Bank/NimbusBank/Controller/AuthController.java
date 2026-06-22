@@ -1,11 +1,11 @@
-package com.Bank.bank_system.Controller;
+package com.Bank.NimbusBank.Controller;
 
-import com.Bank.bank_system.Entity.Usuario;
-import com.Bank.bank_system.Service.AuthService;
-import com.Bank.bank_system.auth.dto.AuthResponse;
-import com.Bank.bank_system.auth.dto.LoginRequest;
-import com.Bank.bank_system.auth.dto.RefreshRequest;
-import com.Bank.bank_system.auth.dto.RegisterRequest;
+import com.Bank.NimbusBank.Entity.Usuario;
+import com.Bank.NimbusBank.Service.AuthService;
+import com.Bank.NimbusBank.auth.dto.AuthResponse;
+import com.Bank.NimbusBank.auth.dto.LoginRequest;
+import com.Bank.NimbusBank.auth.dto.RefreshRequest;
+import com.Bank.NimbusBank.auth.dto.RegisterRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

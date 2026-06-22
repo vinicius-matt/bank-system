@@ -1,6 +1,6 @@
-package com.Bank.bank_system.Entity;
+package com.Bank.NimbusBank.Entity;
 
-import com.Bank.bank_system.model.TipoChavePix;
+import com.Bank.NimbusBank.model.TipoChavePix;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

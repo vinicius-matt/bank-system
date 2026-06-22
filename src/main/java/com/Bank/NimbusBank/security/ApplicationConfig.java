@@ -1,6 +1,6 @@
-package com.Bank.bank_system.security;
+package com.Bank.NimbusBank.security;
 
-import com.Bank.bank_system.Repository.UsuarioRepository;
+import com.Bank.NimbusBank.Repository.UsuarioRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,4 +1,4 @@
-package com.Bank.bank_system.auth.dto;
+package com.Bank.NimbusBank.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
