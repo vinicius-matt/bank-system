@@ -84,6 +84,7 @@ public class ContaController {
     }
 
     @PutMapping("/{id}/alterarLimite")
+    @PreAuthorize("hasRole('ADMIN')")
     public ContaResponseDTO aumentarlimite(@PathVariable Long id, @Valid @RequestBody ValorDTO dto) {
         return contaService.aumentarlimite(id, dto.getValor());
     }

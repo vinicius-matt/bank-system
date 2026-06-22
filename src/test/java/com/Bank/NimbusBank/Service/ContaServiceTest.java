@@ -118,7 +118,7 @@ class ContaServiceTest {
         );
 
         assertEquals(
-                BigDecimal.ZERO,
+                BigDecimal.valueOf(100),
                 resultado.getLimite()
         );
 

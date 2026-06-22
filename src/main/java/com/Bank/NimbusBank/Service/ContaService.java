@@ -150,7 +150,7 @@ public class ContaService {
         Conta conta = new Conta();
         conta.setCliente(cliente);
         conta.setNumero(gerarConta());
-        conta.setLimite(BigDecimal.ZERO);
+        conta.setLimite(BigDecimal.valueOf(100));
         conta.setTipo(contaDTO.getTipoConta());
         conta.setSaldo(BigDecimal.ZERO);
         conta.setStatus(StatusConta.ATIVA);
