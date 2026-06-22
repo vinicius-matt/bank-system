@@ -68,7 +68,8 @@ api.interceptors.response.use(
 export const apiError = (err, fallback = 'Algo deu errado. Tente novamente.') => {
   const data = err?.response?.data
   if (typeof data === 'string') return data
-  return data?.message || data?.error || err?.message || fallback
+  // o backend retorna o campo "mensagem" (PT); mantemos message/error como fallback
+  return data?.mensagem || data?.message || data?.error || err?.message || fallback
 }
 
 export default api
