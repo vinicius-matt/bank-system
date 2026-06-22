@@ -1,6 +1,6 @@
-package com.Bank.bank_system.dto;
+package com.Bank.NimbusBank.dto;
 
-import com.Bank.bank_system.model.TipoChavePix;
+import com.Bank.NimbusBank.model.TipoChavePix;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
