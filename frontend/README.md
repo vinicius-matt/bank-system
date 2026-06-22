@@ -1,6 +1,6 @@
 # Nimbus Bank — Frontend
 
-Front-end moderno (estilo banco digital) para o **bank-system** (Spring Boot + PostgreSQL),
+Front-end moderno (estilo banco digital) para o **Nimbus bank-system** (Spring Boot + PostgreSQL),
 com autenticação **JWT** integrada ponta a ponta.
 
 Stack: **React 18 + Vite + React Router + Axios + Recharts**.
