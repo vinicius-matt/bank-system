@@ -1,4 +1,4 @@
-package com.Bank.bank_system;
+package com.Bank.NimbusBank;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

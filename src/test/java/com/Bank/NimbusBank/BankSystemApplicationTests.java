@@ -1,4 +1,4 @@
-package com.Bank.bank_system;
+package com.Bank.NimbusBank;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
