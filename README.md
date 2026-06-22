@@ -25,7 +25,7 @@
 
 ---
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 **Segurança**
 - Login e cadastro com **JWT** (access token curto + **refresh token** com rotação).
@@ -48,7 +48,7 @@
 
 ---
 
-## 🧱 Stack
+## Stacks
 
 **Back-end:** Java 21 · Spring Boot 4 · Spring Security · Spring Data JPA · PostgreSQL · JWT (jjwt) · OpenPDF · JUnit 5 + Mockito
 
@@ -56,7 +56,7 @@
 
 ---
 
-## 🗂️ Estrutura
+## Estrutura
 
 ```
 bank-system/
@@ -76,7 +76,7 @@ bank-system/
 
 ---
 
-## 🚀 Como rodar
+## Como rodar
 
 ### Com Docker (recomendado)
 
@@ -111,7 +111,7 @@ Documentação da API: `http://localhost:8080/swagger-ui.html`
 
 ---
 
-## 🔐 Como o JWT funciona
+## Como o JWT funciona
 
 1. O login devolve um **access token** (curto) e um **refresh token** (longo).
 2. O front envia `Authorization: Bearer <token>` em cada requisição.
@@ -139,7 +139,7 @@ O repositório inclui `Dockerfile`, `docker-compose.yml` e `render.yaml` prontos
 
 ---
 
-## 🛣️ Roadmap
+## Roadmap
 
 - [x] Docker Compose (Postgres + back-end + front-end)
 - [ ] Migrations com Flyway (hoje `ddl-auto=update`)
