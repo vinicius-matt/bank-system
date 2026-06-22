@@ -97,9 +97,12 @@ export default function ContaDetalhe() {
               <button className="btn btn-ghost" disabled={busy || encerrada} onClick={() => navigate('/transferir', { state: { origemId: conta.id } })}>
                 <Icon.Send width={17} /> Transferir
               </button>
-              <button className="btn btn-ghost" disabled={busy || encerrada} onClick={() => setModal('limite')}>
-                <Icon.Trend width={17} /> Limite
-              </button>
+              {/* Ajuste de limite (cheque especial): somente ADMIN */}
+              {isAdmin && (
+                <button className="btn btn-ghost" disabled={busy || encerrada} onClick={() => setModal('limite')}>
+                  <Icon.Trend width={17} /> Limite
+                </button>
+              )}
             </div>
 
             {/* Operações de status (bloquear/ativar/encerrar): somente ADMIN */}
