@@ -56,7 +56,7 @@ Dashboard
 
 ```
 bank-system/
-├─ src/main/java/com/Bank/bank_system/
+├─ src/main/java/com/Bank/NimbusBank/
 │  ├─ Controller/     # endpoints REST (Conta, Extrato, Cliente, Auth, Pix, Notificacao)
 │  ├─ Service/        # regras de negócio
 │  ├─ Repository/     # acesso a dados (Spring Data JPA)
@@ -119,11 +119,58 @@ Acesse `http://localhost:3000`.
 
 ---
 
+## ☁️ Deploy
+
+O projeto está preparado para deploy: a porta, o CORS, o segredo do JWT e o banco são todos
+controlados por **variáveis de ambiente**.
+
+### Variáveis de ambiente
+
+**Back-end**
+
+| Variável | Descrição | Exemplo |
+|----------|-----------|---------|
+| `DB_URL` | JDBC do PostgreSQL | `jdbc:postgresql://host:5432/bank_system` |
+| `DB_USERNAME` / `DB_PASSWORD` | Credenciais do banco | — |
+| `JWT_SECRET` | Chave Base64 (≥ 256 bits) | `openssl rand -base64 48` |
+| `ALLOWED_ORIGINS` | Origens liberadas no CORS (URL do front) | `https://nimbus-bank-web.onrender.com` |
+| `PORT` | Porta (injetada pela plataforma) | `8080` |
+
+**Front-end** (build-time)
+
+| Variável | Descrição | Exemplo |
+|----------|-----------|---------|
+| `VITE_API_URL` | URL pública da API | `https://nimbus-bank-api.onrender.com` |
+
+### Opção A — Docker (local ou qualquer host com Docker)
+
+Sobe banco + API + front com um comando:
+
+```bash
+docker compose up --build
+```
+
+Front em `http://localhost:3000`, API em `http://localhost:8080`.
+
+### Opção B — Render (grátis, sem cartão)
+
+1. Suba o repositório no GitHub.
+2. No Render: **New → Blueprint** e aponte para este repositório (usa o `render.yaml`).
+3. Preencha os valores marcados como manuais: `DB_URL` (JDBC do banco criado), `JWT_SECRET`,
+   `ALLOWED_ORIGINS` (URL do front) e `VITE_API_URL` (URL da API).
+4. Deploy. As tabelas são criadas na primeira subida (`ddl-auto=update`) e os usuários de
+   demonstração são semeados automaticamente.
+
+> ⚠️ No plano grátis do Render a API "dorme" após ~15 min de inatividade e leva ~30–50s para
+> acordar — a **primeira** requisição pode demorar. Normal para um ambiente de demonstração.
+
+---
+
 ## 🛣️ Próximos passos (roadmap)
 
 - [ ] Migrations com **Flyway** (hoje usa `ddl-auto=update`)
 - [ ] **Testes de integração** ponta a ponta (Testcontainers)
-- [ ] **Docker Compose** (Postgres + back-end + front-end)
+- [x] **Docker Compose** (Postgres + back-end + front-end)
 - [ ] CI com GitHub Actions
 - [ ] Escala fixa de `BigDecimal` (`precision/scale`) e auditoria das operações
 
