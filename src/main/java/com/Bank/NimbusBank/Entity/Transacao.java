@@ -25,6 +25,7 @@ public class Transacao {
     @Enumerated(EnumType.STRING)
     private TransactionType tipo;
 
+    @Column(precision = 19, scale = 2)
     private BigDecimal valor;
 
     private String descricao;

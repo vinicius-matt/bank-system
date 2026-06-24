@@ -27,8 +27,10 @@ public class Conta {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-    private BigDecimal saldo =  BigDecimal.ZERO;
+    @Column(precision = 19, scale = 2)
+    private BigDecimal saldo = BigDecimal.ZERO;
 
+    @Column(precision = 19, scale = 2)
     private BigDecimal limite;
 
     @Enumerated(EnumType.STRING)

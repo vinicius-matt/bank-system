@@ -18,6 +18,8 @@ import com.Bank.NimbusBank.model.StatusConta;
 import com.Bank.NimbusBank.model.TipoNotificacao;
 import com.Bank.NimbusBank.model.TransactionType;
 import com.Bank.NimbusBank.security.CurrentUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,8 @@ import java.util.Random;
 
 @Service
 public class ContaService {
+
+    private static final Logger log = LoggerFactory.getLogger(ContaService.class);
 
     private final ContaRepository contaRepository;
     private final TransacaoRepository transacaoRepository;
@@ -169,6 +173,7 @@ public class ContaService {
         conta.setSaldo(conta.getSaldo().subtract(valor));
         registrarTransacao(conta, TransactionType.SAQUE, valor, "Saque realizado");
         ContaResponseDTO dto = salvarEConverter(conta);
+        log.info("SAQUE valor={} conta={} novoSaldo={}", valor, conta.getNumero(), conta.getSaldo());
         notificarConta(conta, "Saque realizado",
                 "Saque de " + formatar(valor) + " na conta " + conta.getNumero(), TipoNotificacao.TRANSACAO);
         return dto;
@@ -184,6 +189,7 @@ public class ContaService {
         conta.setSaldo(conta.getSaldo().add(valor));
         registrarTransacao(conta, TransactionType.DEPOSITO, valor, "Depósito realizado");
         ContaResponseDTO dto = salvarEConverter(conta);
+        log.info("DEPOSITO valor={} conta={} novoSaldo={}", valor, conta.getNumero(), conta.getSaldo());
         notificarConta(conta, "Depósito recebido",
                 "Depósito de " + formatar(valor) + " na conta " + conta.getNumero(), TipoNotificacao.TRANSACAO);
         return dto;
@@ -242,6 +248,9 @@ public class ContaService {
 
         contaRepository.save(origem);
         contaRepository.save(destino);
+
+        log.info("{} valor={} origem={} destino={} saldoOrigem={}",
+                tipo, valor, origem.getNumero(), destino.getNumero(), origem.getSaldo());
 
         TipoNotificacao tn = tipo == TransactionType.PIX ? TipoNotificacao.PIX : TipoNotificacao.TRANSACAO;
         notificarConta(origem, rotulo + " enviado",
