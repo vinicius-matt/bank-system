@@ -7,6 +7,7 @@ import { useToast } from '../context/ToastContext'
 import { currency, dateTime, maskAccount } from '../utils/format'
 import { StatusBadge, TipoBadge, EmptyState, txMeta } from '../components/Common'
 import Loader from '../components/Loader'
+import LoadingOverlay from '../components/LoadingOverlay'
 import Modal from '../components/Modal'
 import MoneyInput from '../components/MoneyInput'
 import Icon from '../components/Icons'
@@ -60,6 +61,7 @@ export default function ContaDetalhe() {
 
   return (
     <>
+      <LoadingOverlay show={busy} message="Processando operação…" hint="Isso pode levar alguns segundos." />
       <button className="btn btn-ghost btn-sm" onClick={() => navigate('/contas')} style={{ marginBottom: 18 }}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         Contas

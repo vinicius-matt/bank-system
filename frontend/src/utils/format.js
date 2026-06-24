@@ -42,3 +42,24 @@ export const formatPhone = (cel = '') => {
   if (d.length === 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`
   return cel || '—'
 }
+
+// Máscara progressiva de CPF para input: 12345678909 -> 123.456.789-09
+export const maskCpfInput = (v = '') => {
+  const d = String(v).replace(/\D/g, '').slice(0, 11)
+  if (d.length > 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`
+  if (d.length > 6) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`
+  if (d.length > 3) return `${d.slice(0, 3)}.${d.slice(3)}`
+  return d
+}
+
+// Máscara progressiva de celular para input: 11999990000 -> (11) 99999-0000
+export const maskPhoneInput = (v = '') => {
+  const d = String(v).replace(/\D/g, '').slice(0, 11)
+  if (d.length > 10) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`
+  if (d.length > 6) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`
+  if (d.length > 2) return `(${d.slice(0, 2)}) ${d.slice(2)}`
+  if (d.length > 0) return `(${d}`
+  return ''
+}
+
+export const soDigitos = (s = '') => String(s).replace(/\D/g, '')

@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { currency, maskAccount } from '../utils/format'
 import { StatusBadge, TipoBadge, EmptyState } from '../components/Common'
+import { SkeletonContas } from '../components/Skeleton'
 import Loader from '../components/Loader'
 import Modal from '../components/Modal'
 import Icon from '../components/Icons'
@@ -43,7 +44,14 @@ export default function Contas() {
     })
   }, [contas, q, filter])
 
-  if (loading) return <Loader full label="Carregando contas…" />
+  if (loading) {
+    return (
+      <>
+        <div className="page-head"><div><h1>Contas</h1><p>Carregando…</p></div></div>
+        <SkeletonContas />
+      </>
+    )
+  }
 
   return (
     <>

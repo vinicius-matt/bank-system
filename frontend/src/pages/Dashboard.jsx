@@ -6,7 +6,7 @@ import { apiError } from '../api/client'
 import { useToast } from '../context/ToastContext'
 import { currency, maskAccount, dateShort } from '../utils/format'
 import { StatusBadge, TipoBadge, EmptyState, txMeta } from '../components/Common'
-import Loader from '../components/Loader'
+import { SkeletonDashboard } from '../components/Skeleton'
 import Icon from '../components/Icons'
 
 export default function Dashboard() {
@@ -69,7 +69,7 @@ export default function Dashboard() {
     return data
   }, [recent, totals.saldo])
 
-  if (loading) return <Loader full label="Carregando seu painel…" />
+  if (loading) return <SkeletonDashboard />
 
   return (
     <>

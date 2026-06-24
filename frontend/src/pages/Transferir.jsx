@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext'
 import { currency, maskAccount } from '../utils/format'
 import { StatusBadge } from '../components/Common'
 import Loader from '../components/Loader'
+import LoadingOverlay from '../components/LoadingOverlay'
 import MoneyInput from '../components/MoneyInput'
 import Icon from '../components/Icons'
 
@@ -52,6 +53,7 @@ export default function Transferir() {
 
   return (
     <div style={{ maxWidth: 560, margin: '0 auto' }}>
+      <LoadingOverlay show={sending} message="Concluindo transferência…" hint="Isso pode levar alguns segundos." />
       <div className="page-head">
         <div>
           <h1>Transferir</h1>

@@ -5,6 +5,7 @@ import { useToast } from '../context/ToastContext'
 import { currency, maskAccount } from '../utils/format'
 import { EmptyState } from '../components/Common'
 import Loader from '../components/Loader'
+import LoadingOverlay from '../components/LoadingOverlay'
 import Modal from '../components/Modal'
 import MoneyInput from '../components/MoneyInput'
 import Icon from '../components/Icons'
@@ -100,6 +101,7 @@ function TransferirPix({ contas, onDone }) {
 
   return (
     <form className="card card-pad" onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <LoadingOverlay show={sending} message="Enviando Pix…" hint="Isso pode levar alguns segundos." />
       <div className="field">
         <label>De</label>
         <select className="select" value={origemId} onChange={(e) => setOrigemId(e.target.value)} required>

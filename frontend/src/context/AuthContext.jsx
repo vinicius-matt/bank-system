@@ -76,7 +76,6 @@ export function AuthProvider({ children }) {
     }
     verify()
     return () => { active = false }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const value = useMemo(
